@@ -24,7 +24,7 @@ export default function WelcomeScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>DESCOBRIM</Text>
-      <Text style={styles.title}>TÀRREGA</Text>
+      <Text style={styles.title}>TARREGA</Text>
       <Image style={styles.image} source={require("../assets/icon.png")} />
       <Text style={styles.text}>
         Divertiu-vos i veniu a conèixer els racons més emblemàtics de Tèrrega de
