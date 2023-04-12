@@ -10,30 +10,30 @@ import {
 import MapView, { Callout, Marker } from "react-native-maps";
 import { useNavigation } from "@react-navigation/native";
 import HomePage from "./Home";
-import { db } from "../firebase-config.js";
-import { doc, getDoc } from "firebase/firestore";
-import { ref, onValue, push, update, remove, set } from "firebase/database";
-// import database from '@react-native-firebase/database';
-// import firestore from '@react-native-firebase/firestore';
+import useCustomFonts from "../hooks/useCustomFonts";
+//Importar firestore
+import appFirebase from "../database/firebase";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  deleteDoc,
+  getDoc,
+  setDoc,
+  onSnapshot,
+} from "firebase/firestore";
+import Repte1 from "./Repte1";
+
+const db = getFirestore(appFirebase);
 
 export default function Map() {
   const navigation = useNavigation();
 
-  function handleLinkPress() {
-    console.log("Altra pantalla");
-  }
-
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-
-  useEffect(() => {
-    return onValue(ref(db, "/ubicacions"), (querySnapShot) => {
-      let data = querySnapShot.val() || {};
-      let ubicacionsItems = { ...data };
-      console.log(ubicacionsItems);
-      setTodos(ubicacionsItems);
-    });
-  }, []);
+  const [markers, setMarkers] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -56,18 +56,47 @@ export default function Map() {
     })();
   }, []);
 
+  useEffect(() => {
+    const collectionRef = collection(db, "proves");
+    const unsubscribe = onSnapshot(collectionRef, (querySnapshot) => {
+      const markersData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        coordinate: {
+          latitude: doc.data().ubicacio.latitude,
+          longitude: doc.data().ubicacio.longitude,
+        },
+        titol: doc.data().titol,
+        descripcio: doc.data().descripcio,
+      }));
+      setMarkers(markersData);
+    });
+    return unsubscribe;
+  }, []);
+
   let text = "Esperant...";
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {
     text = JSON.stringify(location);
   }
+
+  function handleLinkPress(id: string) {
+    let screenname = "Repte" + id;
+    navigation.navigate(Repte1);
+  }
+
+  const loaded = useCustomFonts();
+
+  if (!loaded) {
+    return null;
+  }
+
   return (
     <View style={styles.global}>
       <View style={styles.top}>
         <Text style={styles.title}>Reptes</Text>
         <TouchableOpacity style={styles.button1} onPress={() => {}}>
-          <Text style={styles.buttonText1}>Botó 1</Text>
+          <Text style={styles.buttonText1}>Proverbi</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.container}>
@@ -84,14 +113,25 @@ export default function Map() {
             showsUserLocation={true}
             followsUserLocation={true}
           >
-            {location && (
-              <Marker
-                coordinate={{
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
-                }}
-              ></Marker>
-            )}
+            {markers.map((marker) => (
+              <Marker key={marker.id} coordinate={marker.coordinate}>
+                <Callout
+                  style={styles.callout}
+                  tooltip={true}
+                  onPress={() => handleLinkPress(marker.id)}
+                >
+                  <View>
+                    <Text style={styles.markertitle}>{marker.titol}</Text>
+                    <Text style={styles.markerdescription}>
+                      {marker.descripcio}
+                    </Text>
+                    <Text style={styles.msgcallout}>
+                      Prem aquí per començar la prova
+                    </Text>
+                  </View>
+                </Callout>
+              </Marker>
+            ))}
           </MapView>
         </View>
         <Text>Text de prova</Text>
@@ -112,6 +152,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 35,
+    fontFamily: "UbuntuBold",
   },
   mapcontainer: {
     width: "100%",
@@ -126,6 +167,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 40,
     overflow: "hidden",
+  },
+  markertitle: {
+    fontFamily: "UbuntuBold",
+  },
+  markerdescription: {
+    fontFamily: "Ubuntu",
   },
   // top: {
   //   flex: 1,
@@ -146,5 +193,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
     fontWeight: "500",
+    fontFamily: "Ubuntu",
+  },
+  callout: {
+    backgroundColor: "#fff",
   },
 });
