@@ -106,7 +106,7 @@ export default function Home({ navigation }) {
           titol: doc.data().titol,
           descripcio: doc.data().descripcio,
         }))
-        .sort((a, b) => a.id - b.id); // Ordena los retos por el valor de su id
+        .sort((a, b) => a.id - b.id);
       setReptes(reptesData);
     });
     return unsubscribe;
@@ -280,13 +280,11 @@ const styles = StyleSheet.create({
   },
   repte: {
     width: "100%",
-    // width: "46%",
     alignItems: "center",
     marginBottom: 20,
     borderColor: "gray",
     borderWidth: 1,
     backgroundColor: "white",
-    //borderRadius: 10,
     overflow: "hidden",
   },
   img: {
