@@ -18,6 +18,8 @@ import Map from "./screens/Map";
 
 import WelcomeScreen from "./screens/WelcomeScreen";
 import StartScreen from "./screens/StartScreen";
+import RegisterScreen from "./screens/RegisterScreen";
+import LoginScreen from "./screens/LoginScreen";
 
 import Header from "./components/Header";
 import { Fragment } from "react";
@@ -26,5 +28,7 @@ import Repte1 from "./screens/Repte1";
 const Drawer = createDrawerNavigator();
 
 export default function App({ navigation }) {
-  return <DrawerNavigation />;
+  //return <LoginScreen />;
+  return <RegisterScreen />;
+  //return <DrawerNavigation />;
 }
