@@ -1,33 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, TextInput, View, TouchableOpacity, ScrollView } from "react-native";
 import { globalStyles } from "../styles/globalStyles";
 import { Base64 } from 'js-base64';
+import * as CryptoJS from 'crypto-js';
+import { useNavigation } from '@react-navigation/native';
 //Importar firestore
 import appFirebase from '../database/firebase'; 
-import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, getDoc, setDoc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, getDoc, setDoc, getCountFromServer, onSnapshot, where, query } from 'firebase/firestore';
 const db = getFirestore(appFirebase);
-//const dbb = getFirestore(app);
 
 const RegisterScreen = () => {
-    loadData();
-    async function loadData() {
-        console.log("hola");
-        try {
-            const equips = await getDocs(collection(db, "equips"));
-            ids = [];
-            equips.forEach((doc) => {
-                ids.push(doc.id);
-                //console.log(doc.id, " => ", doc.data());
-            });
-            ids.sort();
-            ids.forEach((id)=>{
-                console.log(id);
-            })
-        }catch(e){
-            console.log(e);
-        }
-    }
+    
+    const [count, setCount] = useState([]);
+    useEffect(() => {
+        const collectionRef = collection(db, "equips");
+        const unsubscribe = onSnapshot(collectionRef, (querySnapshot) => {
+            const total = querySnapshot.size
+            setCount(total);
+        });
+    }, []);
 
     // Estat inicial
     const [state, setState] = useState({
@@ -35,84 +27,80 @@ const RegisterScreen = () => {
         email: "",
         pass: "",
     });
+    const [psswrd, setPsswrd] = useState({
+        pass: ""
+    });
 
-    // Afegir les dades del formulari
+    // Afegir les dades del formulari al state
     const handleChangeText = (name, value) => {
+        if(name === 'pass'){
+            if(value.toString().length < 6){
+                setState({...state, [name]: value});
+            }else{
+                setPsswrd({...state, [name]: value});
+                value = CryptoJS.MD5(value).toString();
+                setState({...state, [name]: value});
+            }
+        }
         setState({...state, [name]: value});
-    }
-
-    const saveUser = () => {
-        console.log(state);
     }
     
     const saveNewTeam = async () => {
-        //const teams = collection(db, "equips")
-        const docRef = doc(db, "equips", "006");
+        
+        const docRef = doc(db, "equips", count.toString());
+        const emailExists = await checkIfEmailExists(state.email);
+        const nameExists = await checkIfTeamExists(state.name);
+
+        if(state.name == ""){
+            alert("L'equip ha de tenir un nom");
+            return;
+        }
+        if(nameExists){
+            alert("Ja existeix un equip amb aquest nom");
+            return;
+        }
+        if(!validateEmail(state.email)){
+            alert("El format del correu electrònic no es correcte");
+            return;
+        }
+        if(emailExists) {
+            alert('Aquest correu ja està registrat a la base de dades.');
+            return;
+        } 
+        if(state.pass.toString().length < 6){
+            alert("La contrasenya ha de tenir com a mínim 6 dígits");
+            return;
+        }
+
         const payload = { name: state.name, email: state.email, pass: state.pass };
         await setDoc(docRef, state);
 
-        /*const docRef = await addDoc(collection(db, "equips"), {
-            name: state.name,
-            email: state.email,
-            pass: state.pass
-          });*/
-
+        // Resetejar el formualri
+        setState({...state, name: '', email: '', pass: ''});
         console.log(state);
-        /*
-        try {
-            const collectionRef = doc(db, 'equips');
-            const docRef = addDoc(collectionRef, {
-            name: this.state.name,
-            email: this.state.email,
-            pass: this.state.pass,
-            });
-        } catch (e) {
-            console.error("Error adding document: ", e);
-        }
-        */
-        /*if(state.name === ""){
-            alert("Introdueix un nom per l'equip");
-        } else if(state.email === ""){
-            alert("Introdueix un correu correcte");
-        } else if (state.pass === "") {
-            alert("Introdueix una contrasenya");
-        } else {*/
-            //try{
-                //await firebase.db.collection('equips').add({
-                //await addDoc(collection(db, "equips")),{
-                    //...state
-                    /*name: this.state.name,
-                    email: this.state.email,
-                    password: this.state.pass*/
-                //};
-            //}catch{
-                //console.error("Algo va malament");
-            //}
-            
-        //}
+
+        //navigation.navigate('LoginScreen');
     }
 
-
-    const validateEmail = (emailValue) => {
-        let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
-        if (reg.test(emailValue) === false) {
-            console.log("Email is Not Correct");
-            return false;
-        }
-        else {
-            handleChangeText('email', emailValue);
-        }
-        /*
-        if (reg.test(emailValue) === false) {
-            //console.log("Email is Not Correct");
-            return false;
-        }
-        else {
-            handleChangeText("email", emailValue);
-            console.log("Email is Correct");
-            return true;
-        }*/
+    // Comprovar si el correu te el format correcte
+    const validateEmail = (emailValue) => { 
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(emailValue)
     }
+
+    // Comprovar si el correu ja existeix
+    const checkIfEmailExists = async (email) => {
+        const q = query(collection(db, 'equips'), where('email', '==', email));
+        const querySnapshot = await getDocs(q);
+        return !querySnapshot.empty;
+    };
+
+    // Comprovar si el nom de l'equip ja existeix
+    const checkIfTeamExists = async (name) => {
+        const q = query(collection(db, 'equips'), where('name', '==', name));
+        const querySnapshot = await getDocs(q);
+        return !querySnapshot.empty;
+    };
 
     return (
         <ScrollView style={styles.flex_1}>
@@ -140,7 +128,6 @@ const RegisterScreen = () => {
                                 style={styles.input_text}
                                 onChangeText={(value) => handleChangeText("email", value)}
                                 value={state.email}
-                                /*onChangeText={(value) => validateEmail(value)}*/
                             />
                         </View>
                     </View>
@@ -151,9 +138,8 @@ const RegisterScreen = () => {
                                 secureTextEntry={true} 
                                 placeHolder="Contrasenya" 
                                 style={styles.input_text}
-                                /*onChangeText={(value) => handleChangeText("pass", Base64.encode(value))} */
                                 onChangeText={(value) => handleChangeText("pass", value)}
-                                value={state.pass}
+                                value={state.psswrd}
                             /> 
                         </View>
                     </View>

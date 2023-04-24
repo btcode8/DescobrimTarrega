@@ -18,6 +18,8 @@ import Map from "./screens/Map";
 
 import WelcomeScreen from "./screens/WelcomeScreen";
 import StartScreen from "./screens/StartScreen";
+import RegisterScreen from "./screens/RegisterScreen";
+import LoginScreen from "./screens/LoginScreen";
 
 import { Fragment } from "react";
 import Repte1 from "./screens/Repte1";
