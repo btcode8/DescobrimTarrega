@@ -23,6 +23,7 @@
     "@rneui/themed": "^4.0.0-rc.7",
     "crypto-js": "^4.1.1",
     "expo": "~47.0.12",
+    "expo-av": "~13.0.3",
     "expo-location": "~15.0.1",
     "expo-status-bar": "~1.4.2",
     "firebase": "^9.18.0",
@@ -40,7 +41,11 @@
     "react-native-screens": "~3.18.0",
     "react-native-splash-screen": "^3.3.0",
     "react-native-vector-icons": "^9.2.0",
-    "react-native-web": "~0.18.9"
+    "react-native-video": "^5.2.1",
+    "react-native-web": "~0.18.9",
+    "react-native-webview": "11.23.1",
+    "react-native-youtube": "^2.0.2",
+    "react-native-youtube-iframe": "^2.2.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

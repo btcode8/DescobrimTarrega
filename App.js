@@ -21,14 +21,14 @@ import StartScreen from "./screens/StartScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import LoginScreen from "./screens/LoginScreen";
 
-import Header from "./components/Header";
 import { Fragment } from "react";
 import Repte1 from "./screens/Repte1";
+import Repte2 from "./screens/Repte2";
+import Repte3 from "./screens/Repte3";
 
 const Drawer = createDrawerNavigator();
 
 export default function App({ navigation }) {
-  //return <LoginScreen />;
-  return <RegisterScreen />;
-  //return <DrawerNavigation />;
+  return <DrawerNavigation />;
+  // return <Repte1 />;
 }
