@@ -6,6 +6,8 @@ import {
   Text,
   View,
   TouchableOpacity,
+  Modal,
+  Button,
 } from "react-native";
 import MapView, { Callout, Marker } from "react-native-maps";
 import { useNavigation } from "@react-navigation/native";
@@ -25,28 +27,52 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import Repte1 from "./Repte1";
+import Home from "./Home";
 
 const db = getFirestore(appFirebase);
 
-export default function Map() {
-  const navigation = useNavigation();
+export default function Map({ navigation }) {
+  const MAX_DISTANCE = 50;
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [markers, setMarkers] = useState([]);
+  const [reptesCompletats, setreptesCompletats] = useState([]);
+  const [currentTeam, setCurrentTeam] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [locationmodalVisible, setLocationModalVisible] = useState(false);
+
+  function distance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3;
+    const phi1 = (lat1 * Math.PI) / 180; 
+    const phi2 = (lat2 * Math.PI) / 180; 
+    const deltaPhi = ((lat2 - lat1) * Math.PI) / 180; 
+    const deltaLambda = ((lon2 - lon1) * Math.PI) / 180; 
+    const a =
+      Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+      Math.cos(phi1) *
+        Math.cos(phi2) *
+        Math.sin(deltaLambda / 2) *
+        Math.sin(deltaLambda / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c; 
+    return d;
+  }
 
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        setErrorMsg("No s'han otorgat permisos per accedir a la ubicació");
-        return;
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Inici" }],
+        });
       }
 
       let watchID = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
-          timeInterval: 700,
+          timeInterval: 5000,
           distanceInterval: 0,
         },
         (position) => {
@@ -73,16 +99,68 @@ export default function Map() {
     return unsubscribe;
   }, []);
 
-  let text = "Esperant...";
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    text = JSON.stringify(location);
-  }
+  useEffect(() => {
+    //Ficar aqui el id del equip actual
+    const id_equip = "10";
+    const docRef = doc(db, "equips", id_equip);
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      const currentTeamData = docSnap.data();
+      if (currentTeamData) {
+        setCurrentTeam(currentTeamData);
+        const provesCompletades = currentTeamData.proves;
+        setreptesCompletats(provesCompletades);
+      }
+    });
+
+    return unsubscribe;
+  }, []);
 
   function handleLinkPress(id: string) {
-    let screenname = "Repte" + id;
-    navigation.navigate(Repte1);
+    if (!location) {
+      setModalVisible(true);
+      return;
+    }
+
+    const userLat = location.coords.latitude;
+    const userLon = location.coords.longitude;
+
+    const marker = markers.find((marker) => marker.id === id);
+    if (!marker) {
+      return;
+    }
+
+    const markerLat = marker.coordinate.latitude;
+    const markerLon = marker.coordinate.longitude;
+
+    const d = distance(userLat, userLon, markerLat, markerLon);
+    if (d > MAX_DISTANCE) {
+      setLocationModalVisible(true);
+      return;
+    }
+
+    if (typeof reptesCompletats === "undefined") {
+      if (id == 1) {
+        let screenname = "Repte" + id;
+        navigation.navigate(screenname);
+      } else {
+        setModalVisible(true);
+      }
+    } else {
+      if (reptesCompletats.includes("1") || id == 1) {
+        let screenname = "Repte" + id;
+        navigation.navigate(screenname);
+      } else {
+        setModalVisible(true);
+      }
+    }
+  }
+
+  function closeModal() {
+    setModalVisible(false);
+  }
+
+  function closeLocationModal() {
+    setLocationModalVisible(false);
   }
 
   const loaded = useCustomFonts();
@@ -93,7 +171,7 @@ export default function Map() {
 
   return (
     <View style={styles.global}>
-      <View style={styles.top}>
+      <View style={styles.titleContainer}>
         <Text style={styles.title}>Reptes</Text>
         <TouchableOpacity style={styles.button1} onPress={() => {}}>
           <Text style={styles.buttonText1}>Proverbi</Text>
@@ -114,7 +192,15 @@ export default function Map() {
             followsUserLocation={true}
           >
             {markers.map((marker) => (
-              <Marker key={marker.id} coordinate={marker.coordinate}>
+              <Marker
+                key={marker.id}
+                coordinate={marker.coordinate}
+                pinColor={
+                  reptesCompletats && reptesCompletats.includes(marker.id)
+                    ? "green"
+                    : "red"
+                }
+              >
                 <Callout
                   style={styles.callout}
                   tooltip={true}
@@ -134,8 +220,38 @@ export default function Map() {
             ))}
           </MapView>
         </View>
-        <Text>Text de prova</Text>
       </View>
+      <Modal
+        animationType="none"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalView}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>
+              Heu de començar el recorregut des del Museu Comarcal per fer
+              aquesta prova.
+            </Text>
+            <Button title="Tancar" onPress={closeModal} />
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        animationType="none"
+        transparent={true}
+        visible={locationmodalVisible}
+        onRequestClose={closeLocationModal}
+      >
+        <View style={styles.modalView}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>
+              Us heu d'apropar a la ubicació per participar en aquesta prova.
+            </Text>
+            <Button title="Tancar" onPress={closeLocationModal} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -150,6 +266,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 20,
   },
+  titleContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   title: {
     fontSize: 35,
     fontFamily: "UbuntuBold",
@@ -159,7 +280,7 @@ const styles = StyleSheet.create({
     height: "80%",
     borderWidth: 1,
     borderColor: "gray",
-    borderRadius: 20,
+    borderRadius: 5,
     overflow: "hidden",
   },
   map: {
@@ -174,12 +295,9 @@ const styles = StyleSheet.create({
   markerdescription: {
     fontFamily: "Ubuntu",
   },
-  // top: {
-  //   flex: 1,
-  //   flexDirection: "row",
-  //   alignItems: "center",
-  //   justifyContent: "space-between",
-  // },
+  top: {
+    paddingTop: 15,
+  },
   button1: {
     backgroundColor: "white",
     width: "40%",
@@ -197,5 +315,21 @@ const styles = StyleSheet.create({
   },
   callout: {
     backgroundColor: "#fff",
+  },
+  modalView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 20,
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    elevation: 5,
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 10,
   },
 });
