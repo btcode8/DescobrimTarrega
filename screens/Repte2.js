@@ -7,6 +7,7 @@ import {
   Alert,
   Modal,
   ScrollView,
+  TextInput,
 } from "react-native";
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -35,6 +36,9 @@ const Repte2 = () => {
   const [currentTeam, setCurrentTeam] = useState(null);
   const [reptesCompletats, setreptesCompletats] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modal2Visible, setModal2Visible] = useState(false);
+
+  let text1 = "";
 
   const togglePlaying = useCallback(() => {
     setPlaying((prev) => !prev);
@@ -85,6 +89,10 @@ const Repte2 = () => {
     setModalVisible(false);
   }
 
+  function closeModal2() {
+    setModal2Visible(false);
+  }
+
   return (
     <ScrollView>
       <View style={styles.global}>
@@ -108,9 +116,76 @@ const Repte2 = () => {
         <View style={styles.container}>
           <Text style={styles.title}>A) Biblioteca</Text>
           <Text style={styles.text}>
-            Omple els buits del poema que hi ha a la façana de la biblioteca. 
+            Omple els buits del poema que hi ha a la façana de la biblioteca.
           </Text>
+          <View style={styles.containerProva}>
+            <Text style={styles.textProva}>Lorem ipsum dolor</Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(text) => {
+                text1 = text;
+              }}
+            ></TextInput>
+            <Text style={styles.textProva}>amet, consectetur adipiscing</Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(text) => {
+                console.log(text1);
+              }}
+            ></TextInput>
+            <Text style={styles.textProva}>elit. Morbi volutpat</Text>
+            <TextInput style={styles.textInput}></TextInput>
+            <Text style={styles.textProva}>
+              erat, Lorem ipsum dolor sit amet,
+            </Text>
+            <TextInput style={styles.textInput}></TextInput>
+            <Text style={styles.textProva}>
+              consectetur adipiscing elit. Morbi volutpat luctus erat
+            </Text>
+          </View>
+          <Text style={styles.title}>B) Mesura</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setModal2Visible(true)}
+          >
+            <Text style={styles.buttonText}>Més informació</Text>
+          </TouchableOpacity>
+          <Text style={styles.text}>
+            Mesura l'alçada de fins on va arribar l'aigua de la rubinada.
+          </Text>
+          <View style={styles.containerProva}>
+            <TextInput style={styles.textInput} placeholder="Escriu la resposta"></TextInput>
+          </View>
         </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modal2Visible}
+          onRequestClose={closeModal2}
+        >
+          <View style={styles.modalView}>
+            <View style={styles.modalContent}>
+              <Text style={styles.title}>Informació</Text>
+              <Text style={styles.modalText}>
+                La matinada del 23 de setembre de 1874 (dia de Santa Tecla) es
+                va produir el catastròfic aiguat, conegut amb el nom popular de
+                l'Aiguat de Santa Tecla o Rubinada de Santa Tecla, que va
+                afectar gairebé tot Catalunya provocant el desbordament violent
+                de nombrosos rius i rieres de la meitat sud del país. La
+                violenta crescuda de l'Ondara a la vila de Tàrrega va arrossegar
+                tot el raval de Sant Agustí causant 150 víctimes mortals i
+                l'esfondrament de 250 cases.
+              </Text>
+              <TextInput></TextInput>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={closeModal2}
+              >
+                <Text style={styles.modalButtonText}>Tancar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
         <Modal
           animationType="slide"
           transparent={true}
@@ -150,6 +225,7 @@ export default Repte2;
 const styles = StyleSheet.create({
   global: {
     flex: 1,
+    // backgroundColor: "white",
   },
   title: {
     fontSize: 25,
@@ -188,11 +264,24 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 20,
   },
-  // containerProva: {
-  //   flex: 1,
-  //   width: "100%",
-  //   paddingHorizontal: 25,
-  // },
+  containerProva: {
+    backgroundColor: "#e6e6e6",
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "lightgray",
+    padding: 20,
+  },
+  textProva: {
+    fontSize: 22,
+  },
+  textInput: {
+    backgroundColor: "white",
+    fontSize: 22,
+    padding: 5,
+    marginLeft: 10,
+    height: 35,
+    marginVertical: 5,
+  },
   button: {
     backgroundColor: "#f24726",
     paddingHorizontal: 85,
