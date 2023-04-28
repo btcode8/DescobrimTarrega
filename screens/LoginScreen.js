@@ -1,11 +1,65 @@
-import * as React from 'react';
+import React, { useState, useEffect  } from 'react';
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, TextInput, View, ScrollView, TouchableOpacity } from "react-native";
+import * as CryptoJS from 'crypto-js';
+//Importar firestore
+import appFirebase from '../database/firebase'; 
+import { getFirestore, collection, getDocs, getDoc, setDoc, getCountFromServer, onSnapshot, where, query } from 'firebase/firestore';
+const db = getFirestore(appFirebase);
 
 import { globalStyles } from "../styles/globalStyles";
 
 
 const LoginScreen = () => {
+
+    const [state, setState] = useState({
+        email: "",
+        pass: "",
+    });
+
+    const handleChangeText = (name, value) => {
+        setState({...state, [name]: value});
+    }
+
+    // Comprovar si el correu ja existeix
+    const checkIfEmailExists = async (email) => {
+        const q = query(collection(db, 'equips'), where('email', '==', email));
+        const querySnapshot = await getDocs(q);
+        return !querySnapshot.empty;
+    };
+
+    async function login() {
+        const emailExists = await checkIfEmailExists(state.email);
+
+        if(!emailExists){
+            alert('Aquest correu no existeix a la base de dades');
+        }else{
+            // Comprovar usuari y pass
+            const q = query(collection(db, 'equips'), where('email', '==', state.email), where('pass', '==', state.pass));
+            const querySnapshot = await getDocs(q);
+            
+            if (querySnapshot.empty) {
+                alert('Usuari no trovat');
+                return;
+            } 
+
+            const userDoc = querySnapshot.docs[0];
+            const userData = userDoc.data();
+
+            if (userData.pass === state.pass.toString()) {
+                // Contraseña correcta, devolver el ID del usuario
+                console.log('Usuario connectat amb èxit!');
+                return userDoc.id;
+            } else {
+                console.log('Contrasenya incorrecta');
+                return;
+            }
+            
+        }
+
+    }
+
+
     return (
         <View style={styles.flex_1}>
             <View style={styles.textTop}>
@@ -17,17 +71,26 @@ const LoginScreen = () => {
                     <View style={styles.form_group}>
                         <View style={styles.form_groupItem}>
                             <Text>Email</Text>
-                            <TextInput placeHolder="email" style={styles.input_text}/>
+                            <TextInput 
+                                placeHolder="email" 
+                                style={styles.input_text}
+                                onChangeText={(value) => handleChangeText("email", value)}
+                            />
                         </View>
                     </View>
                     <View style={styles.form_group}>
                         <View style={styles.form_groupItem}>
                             <Text>Contrasenya</Text>
-                            <TextInput secureTextEntry={true} placeHolder="Contrasenya" style={styles.input_text} /> 
+                            <TextInput 
+                                secureTextEntry={true} 
+                                placeHolder="Contrasenya" 
+                                style={styles.input_text} 
+                                onChangeText={(value) => handleChangeText("pass", CryptoJS.MD5(value).toString())}
+                            /> 
                         </View>
                     </View>
                     <View style={styles.form_group}>
-                        <TouchableOpacity style={styles.button}>
+                        <TouchableOpacity style={styles.button} onPress={login}>
                             <Text style={styles.buttonText}>Iniciar sessió</Text>
                         </TouchableOpacity>
                     </View>
