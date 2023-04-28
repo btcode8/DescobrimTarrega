@@ -28,6 +28,8 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const db = getFirestore(appFirebase);
 
 const images = {
@@ -44,6 +46,7 @@ const images = {
   repte11: require("../assets/reptes/11.jpg"),
   repte12: require("../assets/reptes/12.jpg"),
 };
+
 
 export default function Home({ navigation }) {
   const MAX_DISTANCE = 50;
@@ -114,7 +117,7 @@ export default function Home({ navigation }) {
 
   useEffect(() => {
     //Ficar aqui el id del equip actual
-    const id_equip = "10";
+    const id_equip = "8";
     const docRef = doc(db, "equips", id_equip);
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
       const currentTeamData = docSnap.data();

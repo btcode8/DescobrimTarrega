@@ -101,7 +101,7 @@ export default function Map({ navigation }) {
 
   useEffect(() => {
     //Ficar aqui el id del equip actual
-    const id_equip = "10";
+    const id_equip = "11";
     const docRef = doc(db, "equips", id_equip);
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
       const currentTeamData = docSnap.data();
