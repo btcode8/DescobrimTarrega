@@ -6,11 +6,12 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import useCustomFonts from "../hooks/useCustomFonts";
 import YoutubePlayer from "react-native-youtube-iframe";
 import { Dimensions } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 //Importar firestore
 import appFirebase from "../database/firebase";
@@ -24,10 +25,36 @@ import {
   getDoc,
   setDoc,
   onSnapshot,
+  update,
+  updateDoc,
+  push,
+  arrayUnion,
 } from "firebase/firestore";
+import Home from "./Home";
+import Map from "./Map";
 
-const Repte1 = () => {
+const db = getFirestore(appFirebase);
+
+const Repte1 = ({ navigation }) => {
   const [playing, setPlaying] = useState(false);
+  const [reptesCompletats, setreptesCompletats] = useState([]);
+  const [currentTeam, setCurrentTeam] = useState(null);
+
+  useEffect(() => {
+    //Ficar aqui el id del equip actual
+    const id_equip = "8";
+    const docRef = doc(db, "equips", id_equip);
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      const currentTeamData = docSnap.data();
+      if (currentTeamData) {
+        setCurrentTeam(currentTeamData);
+        const provesCompletades = currentTeamData.proves;
+        setreptesCompletats(provesCompletades);
+      }
+    });
+
+    return unsubscribe;
+  }, []);
 
   const togglePlaying = useCallback(() => {
     setPlaying((prev) => !prev);
@@ -39,6 +66,31 @@ const Repte1 = () => {
     return null;
   }
 
+  function handleStartPress() {
+    const docRef = doc(db, "equips", "8");
+    if (typeof reptesCompletats === "undefined") {
+      updateDoc(docRef, {
+        proves: ["1"],
+      })
+        .then((response) => {
+          navigation.navigate("Inici");
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+    } else {
+      updateDoc(docRef, {
+        proves: arrayUnion("1"),
+      })
+        .then((response) => {
+          navigation.navigate("Inici");
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+    }
+  }
+
   return (
     <View style={styles.global}>
       <View style={styles.container}>
@@ -46,16 +98,17 @@ const Repte1 = () => {
         <YoutubePlayer
           style={styles.video}
           height={210}
-          width={Dimensions.get("window").width*0.90}
+          width={Dimensions.get("window").width * 0.9}
           play={playing}
           videoId={"aTOj8ppxdCU"}
         />
         <View style={styles.textcontainer}>
-          <Text style={styles.text}>
-            Benvinguts a Descobrim Tàrrega
-          </Text>
+          <Text style={styles.text}>Benvinguts a Descobrim Tàrrega</Text>
         </View>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleStartPress()}
+        >
           <Text style={styles.buttonText}>Començem!</Text>
         </TouchableOpacity>
       </View>

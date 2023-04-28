@@ -8,12 +8,14 @@ import {
   Modal,
   ScrollView,
   TextInput,
+  Image,
 } from "react-native";
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import useCustomFonts from "../hooks/useCustomFonts";
 import YoutubePlayer from "react-native-youtube-iframe";
 import { Dimensions } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 //Importar firestore
 import appFirebase from "../database/firebase";
@@ -27,11 +29,13 @@ import {
   getDoc,
   setDoc,
   onSnapshot,
+  updateDoc,
+  arrayUnion,
 } from "firebase/firestore";
 
 const db = getFirestore(appFirebase);
 
-const Repte2 = () => {
+const Repte2 = ({ navigation }) => {
   const [playing, setPlaying] = useState(false);
   const [currentTeam, setCurrentTeam] = useState(null);
   const [reptesCompletats, setreptesCompletats] = useState([]);
@@ -39,6 +43,13 @@ const Repte2 = () => {
   const [modal2Visible, setModal2Visible] = useState(false);
 
   let text1 = "";
+  let text2 = "";
+  let text3 = "";
+  let text4 = "";
+  let text5 = "";
+  let text6 = "";
+  let text7 = "";
+  let text8 = "";
 
   const togglePlaying = useCallback(() => {
     setPlaying((prev) => !prev);
@@ -46,7 +57,7 @@ const Repte2 = () => {
 
   useEffect(() => {
     //Ficar aqui el id del equip actual
-    const id_equip = "10";
+    const id_equip = "8";
     const docRef = doc(db, "equips", id_equip);
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
       const currentTeamData = docSnap.data();
@@ -93,6 +104,32 @@ const Repte2 = () => {
     setModal2Visible(false);
   }
 
+  function handleEnviar() {
+    if (
+      text1.trim() == "respirar" &&
+      text2.trim() == "veu" &&
+      text3.trim() == "seques" &&
+      text4.trim() == "somnien" &&
+      text5.trim() == "poema" &&
+      text6.trim() == "llegit" &&
+      text7.trim() == "carrer" &&
+      text8.trim() == "tu"
+    ) {
+      const docRef = doc(db, "equips", "8");
+      updateDoc(docRef, {
+        proves: arrayUnion("2"),
+      })
+        .then(() => {
+          navigation.navigate("Inici");
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+    } else {
+      console.log("NO");
+    }
+  }
+
   return (
     <ScrollView>
       <View style={styles.global}>
@@ -119,30 +156,80 @@ const Repte2 = () => {
             Omple els buits del poema que hi ha a la façana de la biblioteca.
           </Text>
           <View style={styles.containerProva}>
-            <Text style={styles.textProva}>Lorem ipsum dolor</Text>
+            <Text style={styles.textProva}>Escolto el</Text>
             <TextInput
               style={styles.textInput}
               onChangeText={(text) => {
                 text1 = text;
               }}
             ></TextInput>
-            <Text style={styles.textProva}>amet, consectetur adipiscing</Text>
+            <Text style={styles.textProva}>
+              de l'aire i em dono al vent; ja sense
+            </Text>
             <TextInput
               style={styles.textInput}
               onChangeText={(text) => {
-                console.log(text1);
+                text2 = text;
               }}
             ></TextInput>
-            <Text style={styles.textProva}>elit. Morbi volutpat</Text>
-            <TextInput style={styles.textInput}></TextInput>
             <Text style={styles.textProva}>
-              erat, Lorem ipsum dolor sit amet,
+              , com un de tants seré cançó. En el trepig de fulles
             </Text>
-            <TextInput style={styles.textInput}></TextInput>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(text) => {
+                text3 = text;
+              }}
+            ></TextInput>
+            <Text style={styles.textProva}>, sento que l'arbre diu: </Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(text) => {
+                text4 = text;
+              }}
+            ></TextInput>
             <Text style={styles.textProva}>
-              consectetur adipiscing elit. Morbi volutpat luctus erat
+              les arrels encara. La vida és un senzill donar-se com un
             </Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(text) => {
+                text5 = text;
+              }}
+            ></TextInput>
+            <Text style={styles.textProva}>
+              escrit, anònim, que vol la llum d'uns ulls per ser
+            </Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(text) => {
+                text6 = text;
+              }}
+            ></TextInput>
+            <Text style={styles.textProva}>
+              una i altra vegada. Amic, si en el
+            </Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(text) => {
+                text7 = text;
+              }}
+            ></TextInput>
+            <Text style={styles.textProva}>
+              no et dic adéu, pensa que sóc un de tants, un
+            </Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(text) => {
+                text8 = text;
+              }}
+            ></TextInput>
+            <Text style={styles.textProva}> mateix, que ja només estimo.</Text>
           </View>
+          <Image
+            style={styles.imatge}
+            source={require("../assets/reptes/1_2.jpg")}
+          />
           <Text style={styles.title}>B) Mesura</Text>
           <TouchableOpacity
             style={styles.button}
@@ -150,12 +237,20 @@ const Repte2 = () => {
           >
             <Text style={styles.buttonText}>Més informació</Text>
           </TouchableOpacity>
-          <Text style={styles.text}>
-            Mesura l'alçada de fins on va arribar l'aigua de la rubinada.
+          <Text style={styles.textProva}>
+            Mesura l'alçada de fins on va arribar l'aigua de la rubinada al
+            carrer de Sant Agustí.
           </Text>
           <View style={styles.containerProva}>
-            <TextInput style={styles.textInput} placeholder="Escriu la resposta"></TextInput>
+            <Text style={styles.text}>Escriu la resposta</Text>
+            <TextInput style={styles.textInput}></TextInput>
           </View>
+          <TouchableOpacity
+            style={styles.button2}
+            onPress={() => handleEnviar()}
+          >
+            <Text style={styles.buttonText}>Enviar resposta</Text>
+          </TouchableOpacity>
         </View>
         <Modal
           animationType="slide"
@@ -231,7 +326,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     textAlign: "center",
     fontFamily: "UbuntuBold",
-    marginVertical: 20,
+    marginBottom: 10,
   },
   // title2: {
   //   fontSize: 20,
@@ -270,6 +365,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "lightgray",
     padding: 20,
+    marginVertical: 15,
   },
   textProva: {
     fontSize: 22,
@@ -287,6 +383,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 85,
     paddingVertical: 15,
     width: "100%",
+    marginVertical: 15,
+  },
+  button2: {
+    backgroundColor: "#f67432",
+    paddingHorizontal: 85,
+    paddingVertical: 15,
+    width: "100%",
+    marginVertical: 15,
   },
   buttonText: {
     color: "#fff",
@@ -301,7 +405,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "center",
     fontFamily: "Ubuntu",
-    marginVertical: 15,
+    // marginVertical: 15,
   },
   modalView: {
     flex: 1,
@@ -331,5 +435,10 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  imatge: {
+    height: 230,
+    width: "100%",
+    marginVertical: 15,
   },
 });

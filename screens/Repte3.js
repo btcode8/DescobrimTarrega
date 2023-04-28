@@ -7,12 +7,15 @@ import {
   Alert,
   Modal,
   ScrollView,
+  TextInput,
+  Image,
 } from "react-native";
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import useCustomFonts from "../hooks/useCustomFonts";
 import YoutubePlayer from "react-native-youtube-iframe";
 import { Dimensions } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 //Importar firestore
 import appFirebase from "../database/firebase";
@@ -26,11 +29,13 @@ import {
   getDoc,
   setDoc,
   onSnapshot,
+  updateDoc,
+  arrayUnion,
 } from "firebase/firestore";
 
 const db = getFirestore(appFirebase);
 
-const Repte3 = () => {
+const Repte3 = ({ navigation }) => {
   const [playing, setPlaying] = useState(false);
   const [currentTeam, setCurrentTeam] = useState(null);
   const [reptesCompletats, setreptesCompletats] = useState([]);
@@ -42,7 +47,7 @@ const Repte3 = () => {
 
   useEffect(() => {
     //Ficar aqui el id del equip actual
-    const id_equip = "10";
+    const id_equip = "8";
     const docRef = doc(db, "equips", id_equip);
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
       const currentTeamData = docSnap.data();
@@ -85,6 +90,10 @@ const Repte3 = () => {
     setModalVisible(false);
   }
 
+  function handleEnviar() {
+    
+  }
+
   return (
     <ScrollView>
       <View style={styles.global}>
@@ -106,7 +115,15 @@ const Repte3 = () => {
           </TouchableOpacity>
         </View>
         <View style={styles.container}>
-          <Text style={styles.text}>Relaciona els punts del mapa amb les parts de l'Adoberia</Text>
+          <Text style={styles.text}>
+            Relaciona els punts del mapa amb les parts de l'Adoberia
+          </Text>
+          <TouchableOpacity
+            style={styles.button2}
+            onPress={() => handleEnviar()}
+          >
+            <Text style={styles.buttonText}>Enviar resposta</Text>
+          </TouchableOpacity>
         </View>
         <Modal
           animationType="slide"
@@ -131,7 +148,11 @@ const Repte3 = () => {
                 Tàrrega forma part de la Xarxa d'Adoberies Històriques de
                 Catalunya.
               </Text>
-              <TouchableOpacity style={styles.modalButton} onPress={closeModal}>
+              <TextInput></TextInput>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={closeModal}
+              >
                 <Text style={styles.modalButtonText}>Tancar</Text>
               </TouchableOpacity>
             </View>
@@ -147,12 +168,13 @@ export default Repte3;
 const styles = StyleSheet.create({
   global: {
     flex: 1,
+    // backgroundColor: "white",
   },
   title: {
     fontSize: 25,
     textAlign: "center",
     fontFamily: "UbuntuBold",
-    marginVertical: 20,
+    marginBottom: 10,
   },
   // title2: {
   //   fontSize: 20,
@@ -185,16 +207,38 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 20,
   },
-  // containerProva: {
-  //   flex: 1,
-  //   width: "100%",
-  //   paddingHorizontal: 25,
-  // },
+  containerProva: {
+    backgroundColor: "#e6e6e6",
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "lightgray",
+    padding: 20,
+    marginVertical: 15,
+  },
+  textProva: {
+    fontSize: 22,
+  },
+  textInput: {
+    backgroundColor: "white",
+    fontSize: 22,
+    padding: 5,
+    marginLeft: 10,
+    height: 35,
+    marginVertical: 5,
+  },
   button: {
     backgroundColor: "#f24726",
     paddingHorizontal: 85,
     paddingVertical: 15,
     width: "100%",
+    marginVertical: 15,
+  },
+  button2: {
+    backgroundColor: "#f67432",
+    paddingHorizontal: 85,
+    paddingVertical: 15,
+    width: "100%",
+    marginVertical: 15,
   },
   buttonText: {
     color: "#fff",
@@ -209,7 +253,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "center",
     fontFamily: "Ubuntu",
-    marginVertical: 15,
+    // marginVertical: 15,
   },
   modalView: {
     flex: 1,
@@ -239,5 +283,10 @@ const styles = StyleSheet.create({
   modalButtonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  imatge: {
+    height: 230,
+    width: "100%",
+    marginVertical: 15,
   },
 });
