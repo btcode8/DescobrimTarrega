@@ -23,6 +23,7 @@ import Repte9 from "../screens/Repte9";
 import Repte10 from "../screens/Repte10";
 import Repte11 from "../screens/Repte11";
 import Repte12 from "../screens/Repte12";
+import Logout from "../screens/Logout";
 
 
 const Drawer = createDrawerNavigator();
@@ -83,7 +84,7 @@ export default function DrawerNavigation() {
         />
         <Drawer.Screen
           name="Sortir"
-          component={Settings}
+          component={Logout}
           options={{ headerTitle: () => null }}
         />
         <Drawer.Screen

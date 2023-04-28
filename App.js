@@ -9,6 +9,9 @@ import Icon from "react-native-vector-icons/Feather";
 import { useNavigation } from "@react-navigation/native";
 import { initializeApp } from "firebase/app";
 import DrawerNavigation from "./components/DrawerNavigation";
+import { useContext } from 'react';
+import { AuthContext } from './components/authContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Home from "./screens/Home";
 import Settings from "./screens/Settings";
@@ -29,6 +32,18 @@ import Repte3 from "./screens/Repte3";
 const Drawer = createDrawerNavigator();
 
 export default function App({ navigation }) {
-  return <DrawerNavigation />;
-  // return <Repte1 />;
+  const userConnectat = obtenirValor();
+
+  return userConnectat != null ? <DrawerNavigation /> : <StackNavigation />;
+  //return <DrawerNavigation />;
+  //return <LoginScreen />;
+}
+async function obtenirValor() {
+  try {
+    const token = await AsyncStorage.getItem("name");
+    return token;
+    console.log(token);
+  } catch (error) {
+      console.error(error);
+  }
 }
