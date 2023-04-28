@@ -2,6 +2,8 @@ import React, { useState, useEffect  } from 'react';
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, TextInput, View, ScrollView, TouchableOpacity } from "react-native";
 import * as CryptoJS from 'crypto-js';
+import { AuthContext } from '../components/authContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 //Importar firestore
 import appFirebase from '../database/firebase'; 
 import { getFirestore, collection, getDocs, getDoc, setDoc, getCountFromServer, onSnapshot, where, query } from 'firebase/firestore';
@@ -39,17 +41,25 @@ const LoginScreen = () => {
             const querySnapshot = await getDocs(q);
             
             if (querySnapshot.empty) {
-                alert('Usuari no trovat');
+                alert('Usuari o contrasenya incorrectes');
                 return;
             } 
 
             const userDoc = querySnapshot.docs[0];
             const userData = userDoc.data();
 
+            console.log(userData)
+
             if (userData.pass === state.pass.toString()) {
+
+                // Contraseña correcta, actualizar el estado de autenticación del usuario
+                //const { setUser } = useContext(AuthContext);
+                //setUser(userDoc.id);
+                guardarValor(userData);
+                //obtenirValor();
                 // Contraseña correcta, devolver el ID del usuario
                 console.log('Usuario connectat amb èxit!');
-                return userDoc.id;
+                //return userDoc.id;
             } else {
                 console.log('Contrasenya incorrecta');
                 return;
@@ -58,6 +68,16 @@ const LoginScreen = () => {
         }
 
     }
+
+    async function guardarValor(userData) {
+        try {
+            await AsyncStorage.removeItem("name");
+            await AsyncStorage.setItem("name", userData.name);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    
 
 
     return (
