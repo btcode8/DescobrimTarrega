@@ -221,7 +221,7 @@ export default function Home({ navigation }) {
             >
               <Image style={styles.img} source={images[`repte${repte.id}`]} />
 
-              <Text style={styles.titlerepte}>{repte.titol}</Text>
+              <Text style={styles.titlerepte}>{repte.descripcio}</Text>
             </TouchableOpacity>
           );
         })}
