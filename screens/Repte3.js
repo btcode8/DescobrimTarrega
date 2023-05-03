@@ -41,6 +41,12 @@ const Repte3 = ({ navigation }) => {
   const [reptesCompletats, setreptesCompletats] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
 
+  let text1 = "";
+  let text2 = "";
+  let text3 = "";
+  let text4 = "";
+  let text5 = "";
+
   const togglePlaying = useCallback(() => {
     setPlaying((prev) => !prev);
   }, []);
@@ -116,8 +122,57 @@ const Repte3 = ({ navigation }) => {
         </View>
         <View style={styles.container}>
           <Text style={styles.text}>
-            Relaciona els punts del mapa amb les parts de l'Adoberia
+            Relaciona els punts del mapa amb les parts de l'Adoberia:
           </Text>
+          <Image
+            source={require('../assets/reptes/adoberia.jpeg')}
+            style={styles.imatge}
+          />
+          <View style={styles.inputResponseBox}>
+            <Text style={styles.numbers}>1</Text>
+            <TextInput
+                style={styles.textInput}
+                onChangeText={(value) => {
+                  text1 = value;
+                }}
+              ></TextInput>
+          </View>
+          <View style={styles.inputResponseBox}>
+            <Text style={styles.numbers}>2</Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(value) => {
+                text2 = value;
+              }}
+            ></TextInput>
+          </View>
+          <View style={styles.inputResponseBox}>
+            <Text style={styles.numbers}>3</Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(value) => {
+                text3 = value;
+              }}
+            ></TextInput>
+          </View>
+          <View style={styles.inputResponseBox}>
+            <Text style={styles.numbers}>4</Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(value) => {
+                text4 = value;
+              }}
+            ></TextInput>
+          </View>
+          <View style={styles.inputResponseBox}>
+            <Text style={styles.numbers}>5</Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(value) => {
+                text5 = value;
+              }}
+            ></TextInput>
+          </View>
           <TouchableOpacity
             style={styles.button2}
             onPress={() => handleEnviar()}
@@ -225,6 +280,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     height: 35,
     marginVertical: 5,
+    width: "90%",
   },
   button: {
     backgroundColor: "#f24726",
@@ -253,6 +309,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "center",
     fontFamily: "Ubuntu",
+    marginBottom: 30
     // marginVertical: 15,
   },
   modalView: {
@@ -289,4 +346,16 @@ const styles = StyleSheet.create({
     width: "100%",
     marginVertical: 15,
   },
+  inputResponseBox: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 15
+  },
+  numbers: {
+    width: "5%",
+    fontSize: 20,
+  }
 });
