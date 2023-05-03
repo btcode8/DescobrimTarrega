@@ -1,8 +1,22 @@
 import { StatusBar } from "expo-status-bar";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import useCustomFonts from "../hooks/useCustomFonts";
+import { useNavigation } from "@react-navigation/native";
+import DrawerNavigation from "../components/DrawerNavigation";
+import StackNavigation from "../components/StackNavigation";
+import { useEffect, useState } from "react";
 
-export default function WelcomeScreen() {
+export default function StartScreen({ navigation }) {
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("beforeRemove", (e) => {
+      if (e.data.action.type === "GO_BACK" && navigation.isFocused()) {
+        e.preventDefault();
+      }
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   const loaded = useCustomFonts();
 
   if (!loaded) {
@@ -13,19 +27,17 @@ export default function WelcomeScreen() {
     <View style={styles.container}>
       <Text style={styles.subtitle}>Benvinguts a</Text>
       <Text style={styles.title}>DESCOBRIM TÀRREGA</Text>
-      <Text style={styles.text}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi volutpat
-        luctus erat, non dapibus orci tincidunt vel. Aliquam erat volutpat.
-        Proin pulvinar faucibus tempor. Donec tincidunt quis mauris at vehicula.
-        Sed consectetur elit mauris, at mollis mauris efficitur vitae. Nullam ac
-        efficitur erat. Donec bibendum porta ligula, a feugiat purus suscipit
-        et.
-      </Text>
+      <Text style={styles.text}>Lorem ipsum dolor sit amet</Text>
       <View style={styles.buttons}>
         <TouchableOpacity style={styles.button1} onPress={() => {}}>
           <Text style={styles.buttonText1}>Personalitzar equip</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button2} onPress={() => {}}>
+        <TouchableOpacity
+          style={styles.button2}
+          onPress={() => {
+            navigation.navigate("DrawerNavigation");
+          }}
+        >
           <Text style={styles.buttonText2}>Començar</Text>
         </TouchableOpacity>
       </View>
