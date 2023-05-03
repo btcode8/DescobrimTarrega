@@ -10,7 +10,7 @@ const Logout = () => {
     async function eliminarValor() {
       try {
         await AsyncStorage.removeItem("name");
-        navigation.navigate("Login");
+        navigation.navigate("StackNavigation");
       } catch (error) {
         console.error(error);
       }
