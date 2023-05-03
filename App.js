@@ -1,49 +1,32 @@
-import "react-native-gesture-handler";
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import { useFonts } from "expo-font";
-import { createDrawerNavigator } from "@react-navigation/drawer";
-import { NavigationContainer } from "@react-navigation/native";
-import { DrawerActions } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/Feather";
-import { useNavigation } from "@react-navigation/native";
-import { initializeApp } from "firebase/app";
 import DrawerNavigation from "./components/DrawerNavigation";
-import { useContext } from 'react';
-import { AuthContext } from './components/authContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import StackNavigation from "./components/StackNavigation";
+import { useEffect, useState } from "react";
+import { NavigationContainer } from "@react-navigation/native";
 
-import Home from "./screens/Home";
-import Settings from "./screens/Settings";
-import Members from "./screens/Members";
-import Score from "./screens/Score";
-import Map from "./screens/Map";
+export default function App() {
+  const [userConnectat, setUserConnectat] = useState(null);
 
-import WelcomeScreen from "./screens/WelcomeScreen";
-import StartScreen from "./screens/StartScreen";
-import RegisterScreen from "./screens/RegisterScreen";
-import LoginScreen from "./screens/LoginScreen";
+  useEffect(() => {
+    async function obtenirValor() {
+      try {
+        const token = await AsyncStorage.getItem("name");
+        setUserConnectat(token);
+        console.log(token);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    obtenirValor();
+  }, []);
 
-import { Fragment } from "react";
-import Repte1 from "./screens/Repte1";
-import Repte2 from "./screens/Repte2";
-import Repte3 from "./screens/Repte3";
-
-const Drawer = createDrawerNavigator();
-
-export default function App({ navigation }) {
-  const userConnectat = obtenirValor();
-
-  return userConnectat != null ? <DrawerNavigation /> : <StackNavigation />;
-  //return <DrawerNavigation />;
-  //return <LoginScreen />;
-}
-async function obtenirValor() {
-  try {
-    const token = await AsyncStorage.getItem("name");
-    return token;
-    console.log(token);
-  } catch (error) {
-      console.error(error);
-  }
+  return userConnectat ? (
+    <NavigationContainer>
+      <DrawerNavigation />
+    </NavigationContainer>
+  ) : (
+    <NavigationContainer>
+      <StackNavigation />
+    </NavigationContainer>
+  );
 }

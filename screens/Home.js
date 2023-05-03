@@ -47,7 +47,6 @@ const images = {
   repte12: require("../assets/reptes/12.jpg"),
 };
 
-
 export default function Home({ navigation }) {
   const MAX_DISTANCE = 50;
 
@@ -58,6 +57,16 @@ export default function Home({ navigation }) {
   const [currentTeam, setCurrentTeam] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [locationmodalVisible, setLocationModalVisible] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("beforeRemove", (e) => {
+      if (e.data.action.type === "GO_BACK" && navigation.isFocused()) {
+        e.preventDefault();
+      }
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   function distance(lat1, lon1, lat2, lon2) {
     const R = 6371e3;
@@ -183,6 +192,15 @@ export default function Home({ navigation }) {
 
   if (!loaded) {
     return null;
+  }
+
+  async function obtenirValor() {
+    try {
+      let name = await AsyncStorage.getItem("name");
+      console.log(name);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (

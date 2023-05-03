@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
   Text,
@@ -8,11 +7,13 @@ import {
   Dimensions,
 } from "react-native";
 import useCustomFonts from "../hooks/useCustomFonts";
+import LoginScreen from "./LoginScreen";
+import { useNavigation } from "@react-navigation/native";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
-export default function WelcomeScreen() {
+export default function WelcomeScreen({ navigation }) {
   const loaded = useCustomFonts();
 
   if (!loaded) {
@@ -28,7 +29,12 @@ export default function WelcomeScreen() {
         Divertiu-vos i veniu a conèixer els racons més emblemàtics de Tèrrega de
         la mà de'n Moixé Natan.
       </Text>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          navigation.navigate("Login");
+        }}
+      >
         <Text style={styles.buttonText}>Comença l'aventura!</Text>
       </TouchableOpacity>
     </View>

@@ -1,30 +1,24 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 
-export default function Logout() {
+const Logout = () => {
+  const navigation = useNavigation();
 
-    async function guardarValor(userData) {
-        try {
-            await AsyncStorage.removeItem("name");
-        } catch (error) {
-            console.error(error);
-        }
+  useEffect(() => {
+    async function eliminarValor() {
+      try {
+        await AsyncStorage.removeItem("name");
+        navigation.navigate("StackNavigation");
+      } catch (error) {
+        console.error(error);
+      }
     }
+    eliminarValor();
+  }, []);
 
+  return null;
+};
 
-  return (
-    <View style={styles.container}>
-      <Text>Pantalla Logout</Text>
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: "#fff",
-      alignItems: "center",
-      justifyContent: "center",
-    },
-  });
+export default Logout;
