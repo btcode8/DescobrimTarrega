@@ -33,6 +33,8 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const db = getFirestore(appFirebase);
 
 const Repte4 = ({ navigation }) => {
@@ -40,14 +42,28 @@ const Repte4 = ({ navigation }) => {
   const [currentTeam, setCurrentTeam] = useState(null);
   const [reptesCompletats, setreptesCompletats] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [teamId, setTeamId] = useState([]);
+
+  useEffect(() => {
+    async function obtenirValor() {
+      try {
+        const token = await AsyncStorage.getItem("teamid");
+
+        setTeamId(token);
+        // console.log(token);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    obtenirValor();
+  }, []);
 
   const togglePlaying = useCallback(() => {
     setPlaying((prev) => !prev);
   }, []);
 
   useEffect(() => {
-    //Ficar aqui el id del equip actual
-    const id_equip = "8";
+    const id_equip = teamId;
     const docRef = doc(db, "equips", id_equip);
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
       const currentTeamData = docSnap.data();

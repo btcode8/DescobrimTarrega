@@ -24,16 +24,21 @@ import {
   deleteDoc,
   getDoc,
   setDoc,
+  query,
+  where,
   onSnapshot,
 } from "firebase/firestore";
 import Repte1 from "./Repte1";
 import Home from "./Home";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const db = getFirestore(appFirebase);
 
 export default function Map({ navigation }) {
   const MAX_DISTANCE = 50;
 
+  const [teamId, setTeamId] = useState(null);
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [markers, setMarkers] = useState([]);
@@ -42,12 +47,45 @@ export default function Map({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [locationmodalVisible, setLocationModalVisible] = useState(false);
 
+  const obtenerValor = async () => {
+    try {
+      const token = await AsyncStorage.getItem("teamid");
+      setTeamId(token);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const carregarDadesEquip = () => {
+    useEffect(() => {
+      if (teamId) {
+        const docRef = doc(db, "equips", teamId.toString());
+        const unsubscribe = onSnapshot(docRef, (docSnap) => {
+          const currentTeamData = docSnap.data();
+          if (currentTeamData) {
+            setCurrentTeam(currentTeamData);
+            const provesCompletades = currentTeamData.proves;
+            setreptesCompletats(provesCompletades);
+            console.log(provesCompletades);
+          }
+        });
+        return unsubscribe;
+      }
+    }, [teamId]);
+  };
+
+  // Obtenim teamId
+  obtenerValor();
+
+  // Carreguem les dades d l'equip després d'obtenir el teamId
+  carregarDadesEquip();
+
   function distance(lat1, lon1, lat2, lon2) {
     const R = 6371e3;
-    const phi1 = (lat1 * Math.PI) / 180; 
-    const phi2 = (lat2 * Math.PI) / 180; 
-    const deltaPhi = ((lat2 - lat1) * Math.PI) / 180; 
-    const deltaLambda = ((lon2 - lon1) * Math.PI) / 180; 
+    const phi1 = (lat1 * Math.PI) / 180;
+    const phi2 = (lat2 * Math.PI) / 180;
+    const deltaPhi = ((lat2 - lat1) * Math.PI) / 180;
+    const deltaLambda = ((lon2 - lon1) * Math.PI) / 180;
     const a =
       Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
       Math.cos(phi1) *
@@ -55,7 +93,7 @@ export default function Map({ navigation }) {
         Math.sin(deltaLambda / 2) *
         Math.sin(deltaLambda / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const d = R * c; 
+    const d = R * c;
     return d;
   }
 
@@ -96,22 +134,6 @@ export default function Map({ navigation }) {
       }));
       setMarkers(markersData);
     });
-    return unsubscribe;
-  }, []);
-
-  useEffect(() => {
-    //Ficar aqui el id del equip actual
-    const id_equip = "11";
-    const docRef = doc(db, "equips", id_equip);
-    const unsubscribe = onSnapshot(docRef, (docSnap) => {
-      const currentTeamData = docSnap.data();
-      if (currentTeamData) {
-        setCurrentTeam(currentTeamData);
-        const provesCompletades = currentTeamData.proves;
-        setreptesCompletats(provesCompletades);
-      }
-    });
-
     return unsubscribe;
   }, []);
 

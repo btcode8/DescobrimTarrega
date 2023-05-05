@@ -33,6 +33,8 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const db = getFirestore(appFirebase);
 
 const Repte2 = ({ navigation }) => {
@@ -41,6 +43,21 @@ const Repte2 = ({ navigation }) => {
   const [reptesCompletats, setreptesCompletats] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [modal2Visible, setModal2Visible] = useState(false);
+  const [teamId, setTeamId] = useState([]);
+
+  useEffect(() => {
+    async function obtenirValor() {
+      try {
+        const token = await AsyncStorage.getItem("teamid");
+
+        setTeamId(token);
+        // console.log(token);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    obtenirValor();
+  }, []);
 
   let text1 = "";
   let text2 = "";
@@ -56,8 +73,7 @@ const Repte2 = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    //Ficar aqui el id del equip actual
-    const id_equip = "8";
+    const id_equip = teamId;
     const docRef = doc(db, "equips", id_equip);
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
       const currentTeamData = docSnap.data();
@@ -115,7 +131,7 @@ const Repte2 = ({ navigation }) => {
       text7.trim() == "carrer" &&
       text8.trim() == "tu"
     ) {
-      const docRef = doc(db, "equips", "8");
+      const docRef = doc(db, "equips", teamId);
       updateDoc(docRef, {
         proves: arrayUnion("2"),
       })
