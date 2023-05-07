@@ -64,6 +64,12 @@ const Repte3 = ({ navigation }) => {
   let text4 = "";
   let text5 = "";
 
+  let text1 = "";
+  let text2 = "";
+  let text3 = "";
+  let text4 = "";
+  let text5 = "";
+
   const togglePlaying = useCallback(() => {
     setPlaying((prev) => !prev);
   }, []);
@@ -145,11 +151,11 @@ const Repte3 = ({ navigation }) => {
           <View style={styles.inputResponseBox}>
             <Text style={styles.numbers}>1</Text>
             <TextInput
-              style={styles.textInput}
-              onChangeText={(value) => {
-                text1 = value;
-              }}
-            ></TextInput>
+                style={styles.textInput}
+                onChangeText={(value) => {
+                  text1 = value;
+                }}
+              ></TextInput>
           </View>
           <View style={styles.inputResponseBox}>
             <Text style={styles.numbers}>2</Text>
