@@ -43,21 +43,38 @@ const Repte2 = ({ navigation }) => {
   const [reptesCompletats, setreptesCompletats] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [modal2Visible, setModal2Visible] = useState(false);
-  const [teamId, setTeamId] = useState([]);
+  const [teamId, setTeamId] = useState(null);
 
-  useEffect(() => {
-    async function obtenirValor() {
-      try {
-        const token = await AsyncStorage.getItem("teamid");
-
-        setTeamId(token);
-        // console.log(token);
-      } catch (error) {
-        console.error(error);
-      }
+  const obtenerValor = async () => {
+    try {
+      const token = await AsyncStorage.getItem("teamid");
+      setTeamId(token);
+    } catch (error) {
+      console.error(error);
     }
-    obtenirValor();
-  }, []);
+  };
+
+  const carregarDadesEquip = () => {
+    useEffect(() => {
+      if (teamId) {
+        const docRef = doc(db, "equips", teamId.toString());
+        const unsubscribe = onSnapshot(docRef, (docSnap) => {
+          const currentTeamData = docSnap.data();
+          if (currentTeamData) {
+            setCurrentTeam(currentTeamData);
+            const provesCompletades = currentTeamData.proves;
+            setreptesCompletats(provesCompletades);
+            console.log(provesCompletades);
+          }
+        });
+        return unsubscribe;
+      }
+    }, [teamId]);
+  };
+
+  obtenerValor();
+
+  carregarDadesEquip();
 
   let text1 = "";
   let text2 = "";
@@ -70,21 +87,6 @@ const Repte2 = ({ navigation }) => {
 
   const togglePlaying = useCallback(() => {
     setPlaying((prev) => !prev);
-  }, []);
-
-  useEffect(() => {
-    const id_equip = teamId;
-    const docRef = doc(db, "equips", id_equip);
-    const unsubscribe = onSnapshot(docRef, (docSnap) => {
-      const currentTeamData = docSnap.data();
-      if (currentTeamData) {
-        setCurrentTeam(currentTeamData);
-        const provesCompletades = currentTeamData.proves;
-        setreptesCompletats(provesCompletades);
-      }
-    });
-
-    return unsubscribe;
   }, []);
 
   const loaded = useCustomFonts();

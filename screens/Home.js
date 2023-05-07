@@ -50,6 +50,7 @@ const images = {
 export default function Home({ navigation }) {
   const MAX_DISTANCE = 50;
 
+
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [reptes, setReptes] = useState([]);
@@ -57,21 +58,38 @@ export default function Home({ navigation }) {
   const [currentTeam, setCurrentTeam] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [locationmodalVisible, setLocationModalVisible] = useState(false);
-  const [teamId, setTeamId] = useState([]);
+  const [teamId, setTeamId] = useState(null);
 
-  useEffect(() => {
-    async function obtenirValor() {
-      try {
-        const token = await AsyncStorage.getItem("teamid");
-
-        setTeamId(token);
-        // console.log(token);
-      } catch (error) {
-        console.error(error);
-      }
+  const obtenerValor = async () => {
+    try {
+      const token = await AsyncStorage.getItem("teamid");
+      setTeamId(token);
+    } catch (error) {
+      console.error(error);
     }
-    obtenirValor();
-  }, []);
+  };
+
+  const carregarDadesEquip = () => {
+    useEffect(() => {
+      if (teamId) {
+        const docRef = doc(db, "equips", teamId.toString());
+        const unsubscribe = onSnapshot(docRef, (docSnap) => {
+          const currentTeamData = docSnap.data();
+          if (currentTeamData) {
+            setCurrentTeam(currentTeamData);
+            const provesCompletades = currentTeamData.proves;
+            setreptesCompletats(provesCompletades);
+            console.log(provesCompletades);
+          }
+        });
+        return unsubscribe;
+      }
+    }, [teamId]);
+  };
+
+  obtenerValor();
+
+  carregarDadesEquip();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("beforeRemove", (e) => {
@@ -136,20 +154,6 @@ export default function Home({ navigation }) {
         .sort((a, b) => a.id - b.id);
       setReptes(reptesData);
     });
-    return unsubscribe;
-  }, []);
-
-  useEffect(() => {
-    const docRef = doc(db, "equips", JSON.stringify(teamId));
-    const unsubscribe = onSnapshot(docRef, (docSnap) => {
-      const currentTeamData = docSnap.data();
-      if (currentTeamData) {
-        setCurrentTeam(currentTeamData);
-        const provesCompletades = currentTeamData.proves;
-        setreptesCompletats(provesCompletades);
-      }
-    });
-
     return unsubscribe;
   }, []);
 

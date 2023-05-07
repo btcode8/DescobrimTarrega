@@ -33,6 +33,8 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const db = getFirestore(appFirebase);
 
 const Repte5 = ({ navigation }) => {
@@ -40,25 +42,42 @@ const Repte5 = ({ navigation }) => {
   const [currentTeam, setCurrentTeam] = useState(null);
   const [reptesCompletats, setreptesCompletats] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modal2Visible, setModal2Visible] = useState(false);
+  const [teamId, setTeamId] = useState(null);
+
+  const obtenerValor = async () => {
+    try {
+      const token = await AsyncStorage.getItem("teamid");
+      setTeamId(token);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const carregarDadesEquip = () => {
+    useEffect(() => {
+      if (teamId) {
+        const docRef = doc(db, "equips", teamId.toString());
+        const unsubscribe = onSnapshot(docRef, (docSnap) => {
+          const currentTeamData = docSnap.data();
+          if (currentTeamData) {
+            setCurrentTeam(currentTeamData);
+            const provesCompletades = currentTeamData.proves;
+            setreptesCompletats(provesCompletades);
+            console.log(provesCompletades);
+          }
+        });
+        return unsubscribe;
+      }
+    }, [teamId]);
+  };
+
+  obtenerValor();
+
+  carregarDadesEquip();
 
   const togglePlaying = useCallback(() => {
     setPlaying((prev) => !prev);
-  }, []);
-
-  useEffect(() => {
-    //Ficar aqui el id del equip actual
-    const id_equip = "8";
-    const docRef = doc(db, "equips", id_equip);
-    const unsubscribe = onSnapshot(docRef, (docSnap) => {
-      const currentTeamData = docSnap.data();
-      if (currentTeamData) {
-        setCurrentTeam(currentTeamData);
-        const provesCompletades = currentTeamData.proves;
-        setreptesCompletats(provesCompletades);
-      }
-    });
-
-    return unsubscribe;
   }, []);
 
   const loaded = useCustomFonts();
@@ -90,15 +109,20 @@ const Repte5 = ({ navigation }) => {
     setModalVisible(false);
   }
 
-  function handleEnviar() {}
+  function closeModal2() {
+    setModal2Visible(false);
+  }
+
+  function handleEnviar() {
+    
+  }
 
   return (
     <ScrollView>
       <View style={styles.global}>
         <View style={styles.container}>
           <View style={styles.header}>{stars}</View>
-          <Text style={styles.title}>Font de Canaletes</Text>
-          
+          <Text style={styles.title}>Font de canaletes</Text>
           <TouchableOpacity
             style={styles.button}
             onPress={() => setModalVisible(true)}
@@ -108,7 +132,8 @@ const Repte5 = ({ navigation }) => {
         </View>
         <View style={styles.container}>
           <Text style={styles.text}>
-            Completa el puzzle per descobrir aquesta icònica font.
+            Mira les parelles de gegants i relaciona-les amb el seu nom. Pots
+            trobar informació a les plaques de la vitrina o la web guixanet.cat.
           </Text>
           <TouchableOpacity
             style={styles.button2}
@@ -268,6 +293,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   imatge: {
+    height: 230,
     width: "100%",
     marginVertical: 15,
   },

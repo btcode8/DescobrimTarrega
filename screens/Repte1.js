@@ -41,37 +41,38 @@ const Repte1 = ({ navigation }) => {
   const [playing, setPlaying] = useState(false);
   const [reptesCompletats, setreptesCompletats] = useState([]);
   const [currentTeam, setCurrentTeam] = useState(null);
-  const [teamId, setTeamId] = useState([]);
+  const [teamId, setTeamId] = useState(null);
 
-  useEffect(() => {
-    async function obtenirValor() {
-      try {
-        const token = await AsyncStorage.getItem("teamid");
-
-        setTeamId(token);
-        // console.log(token);
-      } catch (error) {
-        console.error(error);
-      }
+  const obtenerValor = async () => {
+    try {
+      const token = await AsyncStorage.getItem("teamid");
+      setTeamId(token);
+    } catch (error) {
+      console.error(error);
     }
-    obtenirValor();
-  }, []);
-  
+  };
 
-  useEffect(() => {
-    const id_equip = teamId;
-    const docRef = doc(db, "equips", id_equip);
-    const unsubscribe = onSnapshot(docRef, (docSnap) => {
-      const currentTeamData = docSnap.data();
-      if (currentTeamData) {
-        setCurrentTeam(currentTeamData);
-        const provesCompletades = currentTeamData.proves;
-        setreptesCompletats(provesCompletades);
+  const carregarDadesEquip = () => {
+    useEffect(() => {
+      if (teamId) {
+        const docRef = doc(db, "equips", teamId.toString());
+        const unsubscribe = onSnapshot(docRef, (docSnap) => {
+          const currentTeamData = docSnap.data();
+          if (currentTeamData) {
+            setCurrentTeam(currentTeamData);
+            const provesCompletades = currentTeamData.proves;
+            setreptesCompletats(provesCompletades);
+            console.log(provesCompletades);
+          }
+        });
+        return unsubscribe;
       }
-    });
+    }, [teamId]);
+  };
 
-    return unsubscribe;
-  }, []);
+  obtenerValor();
+
+  carregarDadesEquip();
 
   const togglePlaying = useCallback(() => {
     setPlaying((prev) => !prev);
