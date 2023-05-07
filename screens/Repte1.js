@@ -33,16 +33,33 @@ import {
 import Home from "./Home";
 import Map from "./Map";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const db = getFirestore(appFirebase);
 
 const Repte1 = ({ navigation }) => {
   const [playing, setPlaying] = useState(false);
   const [reptesCompletats, setreptesCompletats] = useState([]);
   const [currentTeam, setCurrentTeam] = useState(null);
+  const [teamId, setTeamId] = useState([]);
 
   useEffect(() => {
-    //Ficar aqui el id del equip actual
-    const id_equip = "8";
+    async function obtenirValor() {
+      try {
+        const token = await AsyncStorage.getItem("teamid");
+
+        setTeamId(token);
+        // console.log(token);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    obtenirValor();
+  }, []);
+  
+
+  useEffect(() => {
+    const id_equip = teamId;
     const docRef = doc(db, "equips", id_equip);
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
       const currentTeamData = docSnap.data();
@@ -67,7 +84,7 @@ const Repte1 = ({ navigation }) => {
   }
 
   function handleStartPress() {
-    const docRef = doc(db, "equips", "8");
+    const docRef = doc(db, "equips", teamId);
     if (typeof reptesCompletats === "undefined") {
       updateDoc(docRef, {
         proves: ["1"],

@@ -33,6 +33,8 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const db = getFirestore(appFirebase);
 
 const Repte3 = ({ navigation }) => {
@@ -40,6 +42,27 @@ const Repte3 = ({ navigation }) => {
   const [currentTeam, setCurrentTeam] = useState(null);
   const [reptesCompletats, setreptesCompletats] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [teamId, setTeamId] = useState([]);
+
+  useEffect(() => {
+    async function obtenirValor() {
+      try {
+        const token = await AsyncStorage.getItem("teamid");
+
+        setTeamId(token);
+        // console.log(token);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    obtenirValor();
+  }, []);
+
+  let text1 = "";
+  let text2 = "";
+  let text3 = "";
+  let text4 = "";
+  let text5 = "";
 
   let text1 = "";
   let text2 = "";
@@ -52,8 +75,7 @@ const Repte3 = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    //Ficar aqui el id del equip actual
-    const id_equip = "8";
+    const id_equip = teamId;
     const docRef = doc(db, "equips", id_equip);
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
       const currentTeamData = docSnap.data();
@@ -96,9 +118,7 @@ const Repte3 = ({ navigation }) => {
     setModalVisible(false);
   }
 
-  function handleEnviar() {
-    
-  }
+  function handleEnviar() {}
 
   return (
     <ScrollView>
@@ -125,7 +145,7 @@ const Repte3 = ({ navigation }) => {
             Relaciona els punts del mapa amb les parts de l'Adoberia:
           </Text>
           <Image
-            source={require('../assets/reptes/adoberia.jpeg')}
+            source={require("../assets/reptes/adoberia.jpeg")}
             style={styles.imatge}
           />
           <View style={styles.inputResponseBox}>
@@ -204,10 +224,7 @@ const Repte3 = ({ navigation }) => {
                 Catalunya.
               </Text>
               <TextInput></TextInput>
-              <TouchableOpacity
-                style={styles.modalButton}
-                onPress={closeModal}
-              >
+              <TouchableOpacity style={styles.modalButton} onPress={closeModal}>
                 <Text style={styles.modalButtonText}>Tancar</Text>
               </TouchableOpacity>
             </View>
@@ -309,7 +326,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "center",
     fontFamily: "Ubuntu",
-    marginBottom: 30
+    marginBottom: 30,
     // marginVertical: 15,
   },
   modalView: {
@@ -352,10 +369,10 @@ const styles = StyleSheet.create({
     flexWrap: "nowrap",
     width: "100%",
     alignItems: "center",
-    marginBottom: 15
+    marginBottom: 15,
   },
   numbers: {
     width: "5%",
     fontSize: 20,
-  }
+  },
 });

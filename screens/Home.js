@@ -57,6 +57,21 @@ export default function Home({ navigation }) {
   const [currentTeam, setCurrentTeam] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [locationmodalVisible, setLocationModalVisible] = useState(false);
+  const [teamId, setTeamId] = useState([]);
+
+  useEffect(() => {
+    async function obtenirValor() {
+      try {
+        const token = await AsyncStorage.getItem("teamid");
+
+        setTeamId(token);
+        // console.log(token);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    obtenirValor();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("beforeRemove", (e) => {
@@ -125,9 +140,7 @@ export default function Home({ navigation }) {
   }, []);
 
   useEffect(() => {
-    //Ficar aqui el id del equip actual
-    const id_equip = "8";
-    const docRef = doc(db, "equips", id_equip);
+    const docRef = doc(db, "equips", JSON.stringify(teamId));
     const unsubscribe = onSnapshot(docRef, (docSnap) => {
       const currentTeamData = docSnap.data();
       if (currentTeamData) {
