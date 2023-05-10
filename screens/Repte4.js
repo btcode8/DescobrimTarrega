@@ -42,6 +42,7 @@ const Repte4 = ({ navigation }) => {
   const [currentTeam, setCurrentTeam] = useState(null);
   const [reptesCompletats, setreptesCompletats] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalAlertVisible, setModalAlertVisible] = useState(false);
   const [teamId, setTeamId] = useState(null);
 
   const obtenerValor = async () => {
@@ -74,6 +75,15 @@ const Repte4 = ({ navigation }) => {
   obtenerValor();
 
   carregarDadesEquip();
+
+  let text1 = "";
+  let text2 = "";
+  let text3 = "";
+  let text4 = "";
+  let text5 = "";
+  let text6 = "";
+  let text7 = "";
+  let text8 = "";
 
   const togglePlaying = useCallback(() => {
     setPlaying((prev) => !prev);
@@ -108,7 +118,36 @@ const Repte4 = ({ navigation }) => {
     setModalVisible(false);
   }
 
-  function handleEnviar() {}
+  function closeModalAlert() {
+    setModalAlertVisible(false);
+  }
+
+  function handleEnviar() {
+    if (
+      text1.toLowerCase().includes("alba") &&
+      text2.toLowerCase().includes("eloi") &&
+      text3.toLowerCase().includes("violant") &&
+      text4.toLowerCase().includes("jaume") &&
+      text5.toLowerCase().includes("almodis") &&
+      text6.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes("ramon") &&
+      text7.toLowerCase().includes("pubilla") &&
+      text8.toLowerCase().includes("hereu")
+    ) {
+      const docRef = doc(db, "equips", teamId);
+      updateDoc(docRef, {
+        proves: arrayUnion("4"),
+      })
+        .then(() => {
+          navigation.navigate("Inici");
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+    } else {
+      setModalAlertVisible(true);
+      console.log("NO");
+    }
+  }
 
   return (
     <ScrollView>
@@ -135,6 +174,92 @@ const Repte4 = ({ navigation }) => {
             Mira les parelles de gegants i relaciona-les amb el seu nom. Pots
             trobar informació a les plaques de la vitrina o la web guixanet.cat.
           </Text>
+          <Text style={styles.textGegant}>
+            Primera parella
+          </Text>
+          <Image
+            source={require("../assets/reptes/gegants/eloi-alba_268x168.jpeg")}
+            style={styles.imatge}
+          />
+          <View style={styles.inputResponseBox}>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(value) => {
+                text1 = value;
+              }}
+            ></TextInput>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(value) => {
+                text2 = value;
+              }}
+            ></TextInput>
+          </View>
+          <Text style={styles.textGegant}>
+            Segona parella
+          </Text>
+          <Image
+            source={require("../assets/reptes/gegants/jaume-violant_268x168.jpeg")}
+            style={styles.imatge}
+          />
+          <View style={styles.inputResponseBox}>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(value) => {
+                text3 = value;
+              }}
+            ></TextInput>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(value) => {
+                text4 = value;
+              }}
+            ></TextInput>
+          </View>
+          <Text style={styles.textGegant}>
+            Tercera parella
+          </Text>
+          <Image
+            source={require("../assets/reptes/gegants/ramon-almodis_268x168.jpeg")}
+            style={styles.imatge}
+          />
+          <View style={styles.inputResponseBox}>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(value) => {
+                text5 = value;
+              }}
+            ></TextInput>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(value) => {
+                text6 = value;
+              }}
+            ></TextInput>
+          </View>
+          <Text style={styles.textGegant}>
+            Cuarta parella
+          </Text>
+          <Image
+            source={require("../assets/reptes/gegants/hereu-pubilla_268x168.jpg")}
+            style={styles.imatge}
+          />
+          <View style={styles.inputResponseBox}>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(value) => {
+                text7 = value;
+              }}
+            ></TextInput>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(value) => {
+                text8 = value;
+              }}
+            ></TextInput>
+          </View>
+        </View>
+        <View style={styles.container}>
           <TouchableOpacity
             style={styles.button2}
             onPress={() => handleEnviar()}
@@ -161,6 +286,25 @@ const Repte4 = ({ navigation }) => {
               </Text>
               <TextInput></TextInput>
               <TouchableOpacity style={styles.modalButton} onPress={closeModal}>
+                <Text style={styles.modalButtonText}>Tancar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalAlertVisible}
+          onRequestClose={closeModalAlert}
+        >
+          <View style={styles.modalView}>
+            <View style={styles.modalContent}>
+              <Text style={styles.title}>Resposta incorrecta</Text>
+              <Text style={styles.modalText}>
+                Revisa les teves respostes, n'hi ha alguna que no és correcta.
+              </Text>
+              <TextInput></TextInput>
+              <TouchableOpacity style={styles.modalButton} onPress={closeModalAlert}>
                 <Text style={styles.modalButtonText}>Tancar</Text>
               </TouchableOpacity>
             </View>
@@ -226,13 +370,31 @@ const styles = StyleSheet.create({
   textProva: {
     fontSize: 22,
   },
+  inputResponseBox: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 35,
+  },
   textInput: {
     backgroundColor: "white",
     fontSize: 22,
     padding: 5,
-    marginLeft: 10,
+    //marginLeft: 10,
     height: 35,
     marginVertical: 5,
+    width: "48%",
+  },
+  textInputLeft: {
+    flex: 1,
+    width: "50%"
+  },
+  textInputRight: {
+    flex: 2,
+    width: "50%"
   },
   button: {
     backgroundColor: "#f24726",
@@ -261,7 +423,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: "center",
     fontFamily: "Ubuntu",
+    marginBottom: 45
     // marginVertical: 15,
+  },
+  textGegant: {
+    fontSize: 21,
+    fontWeight: "bold",
   },
   modalView: {
     flex: 1,
@@ -293,7 +460,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   imatge: {
-    height: 230,
+    height: 175,
     width: "100%",
     marginVertical: 15,
   },

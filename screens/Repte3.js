@@ -42,6 +42,7 @@ const Repte3 = ({ navigation }) => {
   const [currentTeam, setCurrentTeam] = useState(null);
   const [reptesCompletats, setreptesCompletats] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalAlertVisible, setModalAlertVisible] = useState(false);
   const [teamId, setTeamId] = useState(null);
 
   const obtenerValor = async () => {
@@ -80,6 +81,10 @@ const Repte3 = ({ navigation }) => {
   let text3 = "";
   let text4 = "";
   let text5 = "";
+  let text6 = "";
+  let text7 = "";
+  let text8 = "";
+  let text9 = "";
 
   const togglePlaying = useCallback(() => {
     setPlaying((prev) => !prev);
@@ -113,8 +118,37 @@ const Repte3 = ({ navigation }) => {
   function closeModal() {
     setModalVisible(false);
   }
+  function closeModalAlert() {
+    setModalAlertVisible(false);
+  }
 
-  function handleEnviar() {}
+  function handleEnviar() {
+    if (
+      text1.toLowerCase().includes("remull")  &&
+      text2.toLowerCase().includes("calciners") &&
+      text3.toLowerCase().includes("adob")  &&
+      text4.toLowerCase().includes("tenyit") &&
+      text5.toLowerCase().includes("treball") &&
+      text6.toLowerCase().includes("magatzem") &&
+      text7.toLowerCase().includes("pou") &&
+      text8.toLowerCase().includes("entrada") &&
+      text9.toLowerCase().includes("desguas")
+    ) {
+      const docRef = doc(db, "equips", teamId);
+      updateDoc(docRef, {
+        proves: arrayUnion("3"),
+      })
+        .then(() => {
+          navigation.navigate("Inici");
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+    } else {
+      setModalAlertVisible(true);
+      console.log("NO");
+    }
+  }
 
   return (
     <ScrollView>
@@ -189,6 +223,42 @@ const Repte3 = ({ navigation }) => {
               }}
             ></TextInput>
           </View>
+          <View style={styles.inputResponseBox}>
+            <Text style={styles.numbers}>6</Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(value) => {
+                text6 = value;
+              }}
+            ></TextInput>
+          </View>
+          <View style={styles.inputResponseBox}>
+            <Text style={styles.numbers}>7</Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(value) => {
+                text7 = value;
+              }}
+            ></TextInput>
+          </View>
+          <View style={styles.inputResponseBox}>
+            <Text style={styles.numbers}>8</Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(value) => {
+                text8 = value;
+              }}
+            ></TextInput>
+          </View>
+          <View style={styles.inputResponseBox}>
+            <Text style={styles.numbers}>9</Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(value) => {
+                text9 = value;
+              }}
+            ></TextInput>
+          </View>
           <TouchableOpacity
             style={styles.button2}
             onPress={() => handleEnviar()}
@@ -221,6 +291,25 @@ const Repte3 = ({ navigation }) => {
               </Text>
               <TextInput></TextInput>
               <TouchableOpacity style={styles.modalButton} onPress={closeModal}>
+                <Text style={styles.modalButtonText}>Tancar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalAlertVisible}
+          onRequestClose={closeModalAlert}
+        >
+          <View style={styles.modalView}>
+            <View style={styles.modalContent}>
+              <Text style={styles.title}>Resposta incorrecta</Text>
+              <Text style={styles.modalText}>
+                Revisa les teves respostes, n'hi ha alguna que no és correcta.
+              </Text>
+              <TextInput></TextInput>
+              <TouchableOpacity style={styles.modalButton} onPress={closeModalAlert}>
                 <Text style={styles.modalButtonText}>Tancar</Text>
               </TouchableOpacity>
             </View>
@@ -355,7 +444,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   imatge: {
-    height: 230,
+    height: 250,
     width: "100%",
     marginVertical: 15,
   },
