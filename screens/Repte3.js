@@ -429,6 +429,7 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 18,
     marginBottom: 10,
+    textAlign: "justify"
   },
   modalButton: {
     backgroundColor: "#f24726",
