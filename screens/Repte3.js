@@ -124,15 +124,15 @@ const Repte3 = ({ navigation }) => {
 
   function handleEnviar() {
     if (
-      text1.includes("remull")  &&
-      text2.includes("calciners") &&
-      text3.includes("adob")  &&
-      text4.includes("tenyit") &&
-      text5.includes("treball") &&
-      text6.includes("magatzem") &&
-      text7.includes("pou") &&
-      text8.includes("entrada") &&
-      text9.includes("desguas")
+      text1.toLowerCase().includes("remull")  &&
+      text2.toLowerCase().includes("calciners") &&
+      text3.toLowerCase().includes("adob")  &&
+      text4.toLowerCase().includes("tenyit") &&
+      text5.toLowerCase().includes("treball") &&
+      text6.toLowerCase().includes("magatzem") &&
+      text7.toLowerCase().includes("pou") &&
+      text8.toLowerCase().includes("entrada") &&
+      text9.toLowerCase().includes("desguas")
     ) {
       const docRef = doc(db, "equips", teamId);
       updateDoc(docRef, {
