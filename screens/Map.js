@@ -81,19 +81,33 @@ export default function Map({ navigation }) {
   carregarDadesEquip();
 
   function distance(lat1, lon1, lat2, lon2) {
+    // Radi de la Terra en metres
     const R = 6371e3;
+
+    // Convertir latituds a radians
     const phi1 = (lat1 * Math.PI) / 180;
     const phi2 = (lat2 * Math.PI) / 180;
+
+    //Diferencia de latituds en radians
     const deltaPhi = ((lat2 - lat1) * Math.PI) / 180;
+
+    //Diferencia de longituds en radians
     const deltaLambda = ((lon2 - lon1) * Math.PI) / 180;
+
+    //Part angular de la formula del Haversine
     const a =
       Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
       Math.cos(phi1) *
         Math.cos(phi2) *
         Math.sin(deltaLambda / 2) *
         Math.sin(deltaLambda / 2);
+
+    //Calcular angle central
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    //Calcular distancia en metres
     const d = R * c;
+
     return d;
   }
 
