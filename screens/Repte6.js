@@ -44,6 +44,8 @@ const Repte3 = ({ navigation }) => {
   const [currentTeam, setCurrentTeam] = useState(null);
   const [reptesCompletats, setreptesCompletats] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modal2Visible, setModal2Visible] = useState(false);
+  const [modal3Visible, setModal3Visible] = useState(false);
   const [modalAlertVisible, setModalAlertVisible] = useState(false);
   const [teamId, setTeamId] = useState(null);
 
@@ -113,14 +115,20 @@ const Repte3 = ({ navigation }) => {
   function closeModal() {
     setModalVisible(false);
   }
+  function closeModal2() {
+    setModal2Visible(false);
+  }
+  function closeModal3() {
+    setModal3Visible(false);
+  }
   function closeModalAlert() {
     setModalAlertVisible(false);
   }
 
   function handleEnviar() {
     if (
-      text1.toLowerCase().includes("chile")  &&
-      text2.trim() == "63"
+      text1.trim() == "63"  &&
+      text2.toLowerCase().includes("chile")
     ) {
       const docRef = doc(db, "equips", teamId);
       updateDoc(docRef, {
@@ -158,30 +166,44 @@ const Repte3 = ({ navigation }) => {
             <Text style={styles.buttonText}>Més informació</Text>
           </TouchableOpacity>
         </View>
+        
         <View style={styles.container}>
+          <Text style={styles.titleContent}>A) Monument dels Països catalans</Text>
           <Text style={styles.text}>
-            Relaciona els punts del mapa amb les parts de l'Adoberia:
+            Situeu-vos davant el monument dels països catalans i compteu quantes barres componen aquesta escultura.
           </Text>
-          <Image
-            source={require("../assets/reptes/adoberia.jpeg")}
-            style={styles.imatge}
-          />
-          <View style={styles.inputResponseBox}>
-            <TextInput
-              style={styles.textInput}
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setModal2Visible(true)}
+          >
+            <Text style={styles.buttonText}>Més informació</Text>
+          </TouchableOpacity>
+          <View style={styles.containerProva}>
+            <Text style={styles.text}>Escriu la resposta</Text>
+            <TextInput style={styles.textInput}
               onChangeText={(value) => {
-                text1 = value;
-              }}
-            ></TextInput>
+              text1 = value;
+            }}></TextInput>
           </View>
-          <View style={styles.inputResponseBox}>
-            <TextInput
-              style={styles.textInput}
+          
+          <Text style={styles.titleContent}>B) Monument a Ramon Carnicer</Text>
+          <Text style={styles.text}>
+            Busca informació i esbrina de quin país va compondre l’himne nacional Ramon Carnicer.
+          </Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setModal3Visible(true)}
+          >
+            <Text style={styles.buttonText}>Més informació</Text>
+          </TouchableOpacity>
+          <View style={styles.containerProva}>
+            <Text style={styles.text}>Escriu la resposta</Text>
+            <TextInput style={styles.textInput}
               onChangeText={(value) => {
-                text2 = value;
-              }}
-            ></TextInput>
+              text2 = value;
+            }}></TextInput>
           </View>
+
           <TouchableOpacity
             style={styles.button2}
             onPress={() => handleEnviar()}
@@ -189,6 +211,7 @@ const Repte3 = ({ navigation }) => {
             <Text style={styles.buttonText}>Enviar resposta</Text>
           </TouchableOpacity>
         </View>
+
         <Modal
           animationType="slide"
           transparent={true}
@@ -209,17 +232,6 @@ const Repte3 = ({ navigation }) => {
               havia al voltant, avui convertides en habitatges. Primer fou un típic passeig popular de Tàrrega, però els consistoris van 
               tenir molt interès a arreglar-lo com a espai públic fins a convertir-lo en plaça com és avui.
               </Text>
-              <Text style={styles.modalText}>
-              <Text style={styles.negrita}>Monument dels països catalans:</Text> Monument erigit l'any 1981 en un extrem de la Pl. del Carme de Tàrrega, obra de l'escultor Andreu Alfaro.
-               És d'un simbolisme i d'una abstracció extraordinària creada mitjançant rajos d'acer inoxidable en moviment. El fet d'agrupar-se 
-               en quatre parts, alternant moviments i formes diverses, simbolitza les quatre barres que conté la senyera, la bandera de Catalunya.
-               </Text>
-               <Text style={styles.modalText}>
-               <Text style={styles.negrita}>Monument a Ramon Carnicer:</Text> És un monument dedicat al compositor d’òpera targarí Ramon Carnicer. 
-              A la part frontal hi ha gravades les dates en què va morir i néixer en Ramon Carnicer: 1789 i 1855. Ambdues datacions flanquegen 
-              a un medalló de bronze on en relleu s'hi dibuixa el seu bust. El monument commemoratiu és coronat per un grup escultòric format 
-              per un nen que està tocant el flabiol i una nena que l'abraça amigablement.
-              </Text>
               <TextInput></TextInput>
               <TouchableOpacity style={styles.modalButton} onPress={closeModal}>
                 <Text style={styles.modalButtonText}>Tancar</Text>
@@ -228,6 +240,53 @@ const Repte3 = ({ navigation }) => {
           </View>
           </ScrollView>
         </Modal>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modal2Visible}
+          onRequestClose={closeModal2}
+        >
+          <View style={styles.modalView}>
+            <View style={styles.modalContent}>
+              <Text style={styles.title}>Informació</Text>
+              <Text style={styles.modalText}>
+              <Text style={styles.negrita}>Monument dels països catalans:</Text> Monument erigit l'any 1981 en un extrem de la Pl. del Carme de Tàrrega, obra de l'escultor Andreu Alfaro.
+               És d'un simbolisme i d'una abstracció extraordinària creada mitjançant rajos d'acer inoxidable en moviment. El fet d'agrupar-se 
+               en quatre parts, alternant moviments i formes diverses, simbolitza les quatre barres que conté la senyera, la bandera de Catalunya.
+               </Text>
+              <TextInput></TextInput>
+              <TouchableOpacity style={styles.modalButton} onPress={closeModal2}>
+                <Text style={styles.modalButtonText}>Tancar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modal3Visible}
+          onRequestClose={closeModal3}
+        >
+          <View style={styles.modalView}>
+            <View style={styles.modalContent}>
+              <Text style={styles.title}>Informació</Text>
+               <Text style={styles.modalText}>
+               <Text style={styles.negrita}>Monument a Ramon Carnicer:</Text> És un monument dedicat al compositor d’òpera targarí Ramon Carnicer. 
+              A la part frontal hi ha gravades les dates en què va morir i néixer en Ramon Carnicer: 1789 i 1855. Ambdues datacions flanquegen 
+              a un medalló de bronze on en relleu s'hi dibuixa el seu bust. El monument commemoratiu és coronat per un grup escultòric format 
+              per un nen que està tocant el flabiol i una nena que l'abraça amigablement.
+              </Text>
+              <TextInput></TextInput>
+              <TouchableOpacity style={styles.modalButton} onPress={closeModal3}>
+                <Text style={styles.modalButtonText}>Tancar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        
         <Modal
           animationType="slide"
           transparent={true}
@@ -265,12 +324,13 @@ const styles = StyleSheet.create({
     fontFamily: "UbuntuBold",
     marginBottom: 10,
   },
-  // title2: {
-  //   fontSize: 20,
-  //   textAlign: "left",
-  //   fontFamily: "UbuntuBold",
-  //   marginVertical: 20,
-  // },
+  titleContent: {
+    fontSize: 22,
+    textAlign: "center",
+    fontFamily: "UbuntuBold",
+    marginBottom: 10,
+    marginTop: 25
+  },
   header: {
     paddingTop: 20,
     paddingBottom: 10,
