@@ -188,24 +188,29 @@ export default function Home({ navigation }) {
     const repteLon = repte.coordinate.longitude;
 
     const d = distance(userLat, userLon, repteLat, repteLon);
-    if (d > MAX_DISTANCE) {
-      setLocationModalVisible(true);
-      return;
-    }
-
-    if (typeof reptesCompletats === "undefined") {
-      if (id == 1) {
-        let screenname = "Repte" + id;
-        navigation.navigate(screenname);
-      } else {
-        setModalVisible(true);
-      }
+    if (id == 12) {
+      let screenname = "Repte" + id;
+      navigation.navigate(screenname);
     } else {
-      if (reptesCompletats.includes("1") || id == 1) {
-        let screenname = "Repte" + id;
-        navigation.navigate(screenname);
+      if (d > MAX_DISTANCE) {
+        setLocationModalVisible(true);
+        return;
+      }
+
+      if (typeof reptesCompletats === "undefined") {
+        if (id == 1) {
+          let screenname = "Repte" + id;
+          navigation.navigate(screenname);
+        } else {
+          setModalVisible(true);
+        }
       } else {
-        setModalVisible(true);
+        if (reptesCompletats.includes("1") || id == 1) {
+          let screenname = "Repte" + id;
+          navigation.navigate(screenname);
+        } else {
+          setModalVisible(true);
+        }
       }
     }
   }

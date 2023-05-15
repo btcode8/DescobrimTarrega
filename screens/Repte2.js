@@ -43,6 +43,7 @@ const Repte2 = ({ navigation }) => {
   const [reptesCompletats, setreptesCompletats] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [modal2Visible, setModal2Visible] = useState(false);
+  const [modalAlertVisible, setModalAlertVisible] = useState(false);
   const [teamId, setTeamId] = useState(null);
 
   const obtenerValor = async () => {
@@ -85,6 +86,8 @@ const Repte2 = ({ navigation }) => {
   let text7 = "";
   let text8 = "";
 
+  let textAltura = "";
+
   const togglePlaying = useCallback(() => {
     setPlaying((prev) => !prev);
   }, []);
@@ -122,6 +125,10 @@ const Repte2 = ({ navigation }) => {
     setModal2Visible(false);
   }
 
+  function closeModalAlert() {
+    setModalAlertVisible(false);
+  }
+
   function handleEnviar() {
     if (
       text1.trim() == "respirar" &&
@@ -131,7 +138,8 @@ const Repte2 = ({ navigation }) => {
       text5.trim() == "poema" &&
       text6.trim() == "llegit" &&
       text7.trim() == "carrer" &&
-      text8.trim() == "tu"
+      text8.trim() == "tu" &&
+      textAltura.trim() == "325"
     ) {
       const docRef = doc(db, "equips", teamId);
       updateDoc(docRef, {
@@ -144,6 +152,7 @@ const Repte2 = ({ navigation }) => {
           console.log(error.message);
         });
     } else {
+      setModalAlertVisible(true);
       console.log("NO");
     }
   }
@@ -256,12 +265,17 @@ const Repte2 = ({ navigation }) => {
             <Text style={styles.buttonText}>Més informació</Text>
           </TouchableOpacity>
           <Text style={styles.textProva}>
-            Mesura l'alçada de fins on va arribar l'aigua de la rubinada al
-            carrer de Sant Agustí.
+            Mesura l'alçada en centímetres de fins on va arribar l'aigua de la
+            rubinada al carrer de Sant Agustí.
           </Text>
           <View style={styles.containerProva}>
             <Text style={styles.text}>Escriu la resposta</Text>
-            <TextInput style={styles.textInput}></TextInput>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(text) => {
+                textAltura = text;
+              }}
+            ></TextInput>
           </View>
           <TouchableOpacity
             style={styles.button2}
@@ -323,6 +337,28 @@ const Repte2 = ({ navigation }) => {
                 van donar el nou nom a la plaça.
               </Text>
               <TouchableOpacity style={styles.modalButton} onPress={closeModal}>
+                <Text style={styles.modalButtonText}>Tancar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalAlertVisible}
+          onRequestClose={closeModalAlert}
+        >
+          <View style={styles.modalView}>
+            <View style={styles.modalContent}>
+              <Text style={styles.title}>Resposta incorrecta</Text>
+              <Text style={styles.modalText}>
+                Revisa les teves respostes, n'hi ha alguna que no és correcta.
+              </Text>
+              <TextInput></TextInput>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={closeModalAlert}
+              >
                 <Text style={styles.modalButtonText}>Tancar</Text>
               </TouchableOpacity>
             </View>
@@ -440,7 +476,7 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 18,
     marginBottom: 10,
-    textAlign: "justify"
+    textAlign: "justify",
   },
   modalButton: {
     backgroundColor: "#f24726",
