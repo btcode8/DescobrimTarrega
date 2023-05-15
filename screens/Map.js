@@ -169,24 +169,29 @@ export default function Map({ navigation }) {
     const markerLon = marker.coordinate.longitude;
 
     const d = distance(userLat, userLon, markerLat, markerLon);
-    if (d > MAX_DISTANCE) {
-      setLocationModalVisible(true);
-      return;
-    }
-
-    if (typeof reptesCompletats === "undefined") {
-      if (id == 1) {
-        let screenname = "Repte" + id;
-        navigation.navigate(screenname);
-      } else {
-        setModalVisible(true);
-      }
+    if (id == 12) {
+      let screenname = "Repte" + id;
+      navigation.navigate(screenname);
     } else {
-      if (reptesCompletats.includes("1") || id == 1) {
-        let screenname = "Repte" + id;
-        navigation.navigate(screenname);
+      if (d > MAX_DISTANCE) {
+        setLocationModalVisible(true);
+        return;
+      }
+
+      if (typeof reptesCompletats === "undefined") {
+        if (id == 1) {
+          let screenname = "Repte" + id;
+          navigation.navigate(screenname);
+        } else {
+          setModalVisible(true);
+        }
       } else {
-        setModalVisible(true);
+        if (reptesCompletats.includes("1") || id == 1) {
+          let screenname = "Repte" + id;
+          navigation.navigate(screenname);
+        } else {
+          setModalVisible(true);
+        }
       }
     }
   }
@@ -236,6 +241,7 @@ export default function Map({ navigation }) {
                     ? "green"
                     : "red"
                 }
+                icon={marker.id == 12 ? require("../assets/info.png") : null}
               >
                 <Callout
                   style={styles.callout}
