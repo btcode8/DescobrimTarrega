@@ -27,7 +27,7 @@ export default function StartScreen({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.subtitle}>Benvinguts a</Text>
       <Text style={styles.title}>DESCOBRIM TÀRREGA</Text>
-      <Text style={styles.text}>Lorem ipsum dolor sit amet</Text>
+      <Text style={styles.text}>Conéixeu Tàrrega d'una forma original i divertida</Text>
       <View style={styles.buttons}>
         <TouchableOpacity style={styles.button1} onPress={() => {}}>
           <Text style={styles.buttonText1}>Personalitzar equip</Text>

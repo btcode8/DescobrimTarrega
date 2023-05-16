@@ -95,7 +95,7 @@ const Repte3 = ({ navigation }) => {
 
   const stars = [];
   for (let i = 0; i < 10; i++) {
-    if (i < reptesCompletats.length) {
+    if (i < reptesCompletats.length - 1) {
       stars.push(
         <Icon
           key={i}
