@@ -44,7 +44,7 @@ const Repte10 = ({ navigation }) => {
   const [currentTeam, setCurrentTeam] = useState(null);
   const [reptesCompletats, setreptesCompletats] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [modal2Visible, setModal2Visible] = useState(false);
+  const [modalAlertVisible, setModalAlertVisible] = useState(false);
   const [teamId, setTeamId] = useState(null);
 
   const obtenerValor = async () => {
@@ -78,6 +78,8 @@ const Repte10 = ({ navigation }) => {
 
   carregarDadesEquip();
 
+  let text = "";
+
   const togglePlaying = useCallback(() => {
     setPlaying((prev) => !prev);
   }, []);
@@ -90,7 +92,7 @@ const Repte10 = ({ navigation }) => {
 
   const stars = [];
   for (let i = 0; i < 10; i++) {
-    if (i < reptesCompletats.length) {
+    if (i < reptesCompletats.length - 1) {
       stars.push(
         <Icon
           key={i}
@@ -110,19 +112,256 @@ const Repte10 = ({ navigation }) => {
   function closeModal() {
     setModalVisible(false);
   }
-
-  function closeModal2() {
-    setModal2Visible(false);
+  function closeModalAlert() {
+    setModalAlertVisible(false);
   }
 
-  function handleEnviar() {}
+  function handleEnviar() {
+    const docRef = doc(db, "equips", teamId);
+    updateDoc(docRef, {
+      proves: arrayUnion("10"),
+    })
+      .then(() => {
+        navigation.navigate("Inici");
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  }
+
   return (
-    <View>
-      <Text>Repte10</Text>
-    </View>
+    <ScrollView>
+      <View style={styles.global}>
+        <View style={styles.container}>
+          <View style={styles.header}>{stars}</View>
+          <Text style={styles.title}>Mural de Manuel de Pedrolo</Text>
+          <YoutubePlayer
+            style={styles.video}
+            height={230}
+            width={Dimensions.get("window").width * 0.9}
+            play={playing}
+            videoId={"lt-mXTgcgxA"}
+          />
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={styles.buttonText}>Més informació</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.container}>
+          <Text style={styles.text}>
+            Mira atentament el grafit de Manuel de Pedrolo i intenta trobar les
+            6 diferències amb el següent grafit.
+          </Text>
+          <Image
+            style={styles.imatge}
+            source={require("../assets/reptes/pedrolo-edit.jpg")}
+          />
+          <TouchableOpacity
+            style={styles.button2}
+            onPress={() => handleEnviar()}
+          >
+            <Text style={styles.buttonText}>Enviar resposta</Text>
+          </TouchableOpacity>
+        </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={closeModal}
+        >
+          <View style={styles.modalView}>
+            <View style={styles.modalContent}>
+              <Text style={styles.title}>Informació</Text>
+              <Text style={styles.modalText}>
+                Manuel de Pedrolo (1918-1990) va néixer a l'Aranyó (Segarra) i
+                va viure a Tàrrega durant part de la seva vida. L'escriptor, que
+                va ser novel·lista, poeta, dramaturg i traductor, està
+                considerat un dels autors més prolífics de la literatura
+                catalana. La seva intenció va ser acostar la literatura catalana
+                a tota mena de lectors i va experimentar amb la novel·la negra,
+                la ciència-ficció i el teatre de l'absurd, entre d'altres. El
+                1979 va rebre el Premi d'Honor de les Lletres Catalanes.
+                Coincidint amb el 25è aniversari de la seva mort (2015), es va
+                construir un mural de 200 m2 fet en grafit. L'artista Javier
+                Morillas, hi va treballar durant quatre dies, primer de nit per
+                poder projectar la imatge de l'escriptor a la paret i
+                posteriorment ja amb llum de dia per acabar la feina. Una frase
+                de Manuel de Pedrolo completa el mural.
+              </Text>
+              <TextInput></TextInput>
+              <TouchableOpacity style={styles.modalButton} onPress={closeModal}>
+                <Text style={styles.modalButtonText}>Tancar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalAlertVisible}
+          onRequestClose={closeModalAlert}
+        >
+          <View style={styles.modalView}>
+            <View style={styles.modalContent}>
+              <Text style={styles.title}>Resposta incorrecta</Text>
+              <Text style={styles.modalText}>
+                Revisa les teves respostes, n'hi ha alguna que no és correcta.
+              </Text>
+              <TextInput></TextInput>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={closeModalAlert}
+              >
+                <Text style={styles.modalButtonText}>Tancar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    </ScrollView>
   );
 };
 
 export default Repte10;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  global: {
+    flex: 1,
+    // backgroundColor: "white",
+  },
+  title: {
+    fontSize: 25,
+    textAlign: "center",
+    fontFamily: "UbuntuBold",
+    marginBottom: 10,
+  },
+  // title2: {
+  //   fontSize: 20,
+  //   textAlign: "left",
+  //   fontFamily: "UbuntuBold",
+  //   marginVertical: 20,
+  // },
+  header: {
+    paddingTop: 20,
+    paddingBottom: 10,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+  },
+  star: {
+    fontSize: 20,
+    paddingHorizontal: 2,
+    color: "black",
+  },
+  starCompleted: {
+    fontSize: 20,
+    paddingHorizontal: 2,
+    color: "#edb93e",
+  },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 20,
+  },
+  containerProva: {
+    backgroundColor: "#e6e6e6",
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "lightgray",
+    padding: 20,
+    marginVertical: 15,
+  },
+  textProva: {
+    fontSize: 22,
+  },
+  textInput: {
+    backgroundColor: "white",
+    fontSize: 22,
+    padding: 5,
+    marginLeft: 10,
+    height: 35,
+    marginVertical: 5,
+    width: "90%",
+  },
+  button: {
+    backgroundColor: "#f24726",
+    paddingHorizontal: 85,
+    paddingVertical: 15,
+    width: "100%",
+    marginVertical: 15,
+  },
+  button2: {
+    backgroundColor: "#f67432",
+    paddingHorizontal: 85,
+    paddingVertical: 15,
+    width: "100%",
+    marginVertical: 15,
+  },
+  buttonText: {
+    color: "#fff",
+    fontFamily: "UbuntuBold",
+    fontSize: 15,
+    textAlign: "center",
+  },
+  textcontainer: {
+    width: "60%",
+  },
+  text: {
+    fontSize: 20,
+    textAlign: "center",
+    fontFamily: "Ubuntu",
+    marginBottom: 30,
+    // marginVertical: 15,
+  },
+  modalView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 20,
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    elevation: 5,
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  modalButton: {
+    backgroundColor: "#f24726",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 5,
+    padding: 10,
+    marginTop: 10,
+    height: 40,
+  },
+  modalButtonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  imatge: {
+    height: 250,
+    width: "100%",
+    marginVertical: 15,
+  },
+  inputResponseBox: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "nowrap",
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  numbers: {
+    width: "5%",
+    fontSize: 20,
+  },
+});
