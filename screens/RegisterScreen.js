@@ -97,7 +97,7 @@ const RegisterScreen = ({ navigation }) => {
     setState({ ...state, name: "", email: "", pass: "" });
     console.log(state);
 
-    //navigation.navigate('LoginScreen');
+    navigation.navigate("Login");
   };
 
   // Comprovar si el correu te el format correcte
