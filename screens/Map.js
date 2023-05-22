@@ -66,7 +66,7 @@ export default function Map({ navigation }) {
             setCurrentTeam(currentTeamData);
             const provesCompletades = currentTeamData.proves;
             setreptesCompletats(provesCompletades);
-            console.log(provesCompletades);
+            // console.log(provesCompletades);
           }
         });
         return unsubscribe;

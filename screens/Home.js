@@ -22,6 +22,8 @@ import {
   addDoc,
   getDocs,
   doc,
+  query,
+  where,
   deleteDoc,
   getDoc,
   setDoc,
@@ -61,8 +63,26 @@ export default function Home({ navigation }) {
 
   const obtenerValor = async () => {
     try {
-      const token = await AsyncStorage.getItem("teamid");
-      setTeamId(token);
+      const name = await AsyncStorage.getItem("name");
+
+      const collectionRef = collection(db, "equips");
+
+      const q = query(collectionRef, where("name", "==", name));
+
+      getDocs(q)
+        .then((querySnapshot) => {
+          if (querySnapshot.docs.length > 0) {
+            const docId = querySnapshot.docs[0].id;
+            setTeamId(docId.toString());
+            AsyncStorage.setItem("teamid", docId.toString());
+            // console.log(docId.toString());
+          } else {
+            console.log("No s'ha trobat cap equip.");
+          }
+        })
+        .catch((error) => {
+          console.log("Error al buscar el document:", error);
+        });
     } catch (error) {
       console.error(error);
     }
@@ -78,7 +98,7 @@ export default function Home({ navigation }) {
             setCurrentTeam(currentTeamData);
             const provesCompletades = currentTeamData.proves;
             setreptesCompletats(provesCompletades);
-            console.log(provesCompletades);
+            // console.log(provesCompletades);
           }
         });
         return unsubscribe;
@@ -232,9 +252,9 @@ export default function Home({ navigation }) {
   async function obtenirValor() {
     try {
       let name = await AsyncStorage.getItem("name");
-      console.log(name);
+      // console.log(name);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }
 
