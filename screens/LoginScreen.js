@@ -120,7 +120,7 @@ const LoginScreen = ({ navigation }) => {
     <View style={styles.flex_1}>
       <View style={styles.textTop}>
         <Text style={styles.textTop_title}>DESCOBRIM</Text>
-        <Text style={styles.textTop_title}>TARREGA</Text>
+        <Text style={styles.textTop_title}>TÀRREGA</Text>
       </View>
       <View style={styles.form}>
         <View style={styles.form_box}>

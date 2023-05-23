@@ -66,7 +66,7 @@ export default function Map({ navigation }) {
             setCurrentTeam(currentTeamData);
             const provesCompletades = currentTeamData.proves;
             setreptesCompletats(provesCompletades);
-            // console.log(provesCompletades);
+            console.log(provesCompletades);
           }
         });
         return unsubscribe;
@@ -221,6 +221,7 @@ export default function Map({ navigation }) {
       <View style={styles.container}>
         <View style={styles.mapcontainer}>
           <MapView
+            key={reptesCompletats ? reptesCompletats.length : 0}
             style={styles.map}
             initialRegion={{
               latitude: 41.648050980216354,
